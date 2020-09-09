@@ -32,4 +32,7 @@ public @Data class User {
   
   @Column(name = "avatar_url")
   private String avatarUrl;
+
+  @Column(name = "password")
+  private String password;
 }
