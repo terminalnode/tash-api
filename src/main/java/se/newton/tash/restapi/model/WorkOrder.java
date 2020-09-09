@@ -27,8 +27,9 @@ public @Data class WorkOrder {
   @Column(name = "latitude")
   private double latitude;
 
-  @Column(name = "customer_id")
-  private long customerId;
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "customer_id")
+  private Customer customer;
 
   @Column(name = "created_at")
   private Timestamp createdAt;
