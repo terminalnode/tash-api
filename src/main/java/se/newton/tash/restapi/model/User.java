@@ -35,4 +35,24 @@ public @Data class User {
 
   @Column(name = "password")
   private String password;
+
+  /**
+   * Take another User object as only argument and replace the values of the fields in
+   * this object with this the values of the field in that one. Skip sensitive fields
+   * such as id and password.
+   * @param user The object with which to update the fields in this object.
+   */
+  public void updateDataWithUser(User user) {
+    this.email = user.email;
+    this.firstName = user.firstName;
+    this.lastName = user.lastName;
+    this.admin = user.admin;
+    this.longitude = user.longitude;
+    this.latitude = user.latitude;
+    this.avatarUrl = user.avatarUrl;
+
+    // Skip this data:
+    // this.id = user.id;
+    // this.password = user.password;
+  }
 }
