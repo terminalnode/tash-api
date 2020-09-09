@@ -32,7 +32,7 @@ public class UserControllerV1 {
 
   @PostMapping
   public User createNewUser(@RequestBody User newUser) {
-    newUser.setId(0);
+    newUser.setId(0L);
     return userRepository.save(newUser);
   }
 
