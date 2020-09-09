@@ -1,9 +1,11 @@
 package se.newton.tash.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
 
+import java.util.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -31,10 +33,14 @@ public @Data class WorkOrder {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
+  @Temporal(TemporalType.DATE)
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
   @Column(name = "created_at")
-  private Timestamp createdAt;
+  private Date createdAt;
 
+  @Temporal(TemporalType.DATE)
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
   @Column(name = "completed_at")
-  private Timestamp completedAt;
+  private Date completedAt;
 
 }
