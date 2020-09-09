@@ -1,13 +1,11 @@
 package se.newton.tash.restapi.rest.controller;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.User;
 import se.newton.tash.restapi.repository.UserRepository;
@@ -38,15 +36,15 @@ public class UserControllerV1Test {
     allUsers.add(u2);
     allUsers.add(u3);
 
-    Mockito.when(userRepository.findAll()).thenReturn(allUsers);
-    Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(u1));
-    Mockito.when(userRepository.findById(2L)).thenReturn(Optional.of(u2));
-    Mockito.when(userRepository.findById(13L)).thenReturn(Optional.of(u3));
+    when(userRepository.findAll()).thenReturn(allUsers);
+    when(userRepository.findById(1L)).thenReturn(Optional.of(u1));
+    when(userRepository.findById(2L)).thenReturn(Optional.of(u2));
+    when(userRepository.findById(13L)).thenReturn(Optional.of(u3));
   }
 
   @Test
   public void testFetchAllUsers() {
     List<User> result = userController.fetchAllUsers();
-    Assertions.assertThat(result).contains(u1);
+    assertThat(result).contains(u1);
   }
 }
