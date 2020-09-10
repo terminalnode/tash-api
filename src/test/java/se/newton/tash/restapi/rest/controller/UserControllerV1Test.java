@@ -47,4 +47,6 @@ public class UserControllerV1Test {
     List<User> result = userController.fetchAllUsers();
     assertThat(result).contains(u1);
   }
+
+
 }

@@ -43,4 +43,18 @@ public @Data class WorkOrder {
   @Column(name = "completed_at")
   private Date completedAt;
 
+  // ----- Constructors ----- //
+
+  public WorkOrder(Long id, String title, String description, double longitude, double latitude, Date createdAt, Date completedAt) {
+
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.createdAt = createdAt;
+    this.completedAt = completedAt;
+
+  }
+
 }

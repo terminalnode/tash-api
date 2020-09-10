@@ -22,20 +22,23 @@ public class WorkOrderControllerV1 {
 
   @GetMapping("/{id}")
   public WorkOrder getWorkOrderById(@PathVariable long id) {
-    return workOrderRepository.getOne(id);
+    return workOrderRepository.findById(id).get();
   }
 
   @PostMapping
-  public void createNewWorkOrder(@RequestBody WorkOrder workOrder) {
+  public WorkOrder createNewWorkOrder(@RequestBody WorkOrder workOrder) {
     workOrder.setId(0);
     System.out.println(workOrder.toString());
-    workOrderRepository.save(workOrder);
+    WorkOrder newWorkOrder = workOrderRepository.save(workOrder);
+    return newWorkOrder;
+
   }
 
   @PutMapping
-  public void updateExistingWorkOrder(@RequestBody WorkOrder workOrder) {
+  public WorkOrder updateExistingWorkOrder(@RequestBody WorkOrder workOrder) {
     if (workOrderRepository.existsById(workOrder.getId())) {
-      workOrderRepository.save(workOrder);
+      WorkOrder updatedWorkOrder = workOrderRepository.save(workOrder);
+      return updatedWorkOrder;
     }
     else {
       throw new IllegalArgumentException("The ID specified does not exist in the workOrder table.");
@@ -44,8 +47,10 @@ public class WorkOrderControllerV1 {
   }
 
   @DeleteMapping("/{id}")
-  public void deleteWorkOrderById(@PathVariable long id) {
+  public WorkOrder deleteWorkOrderById(@PathVariable long id) {
+    WorkOrder deletedWorkOrder = workOrderRepository.findById(id).get();
     workOrderRepository.deleteById(id);
+    return deletedWorkOrder;
   }
 
 
