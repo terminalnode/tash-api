@@ -80,7 +80,7 @@ public class UserControllerV1Test {
   public void testCreateNewUser() {
     // Create new user with controller.
     User.UserBuilder userBuilder = User.builder()
-        .id(100L)
+        .id(-1L)
         .email("lotta.shmotta@burgerking.se")
         .firstName("Lotta")
         .lastName("Shmotta")
@@ -99,8 +99,10 @@ public class UserControllerV1Test {
         .save(userCaptor.capture());
     User savedUser = userCaptor.getValue();
 
-    // Verify that user was saved with correct credentials.
+    // Verify that user was saved with identical user info, except for ID.
+    // Any ID >= 0 is accepted, to allow for different implementations.
     assertThat(savedUser).isNotEqualTo(twinUser);
+    assertThat(savedUser.getId()).isGreaterThanOrEqualTo(0);
     twinUser.setId(savedUser.getId());
     assertThat(savedUser).isEqualTo(twinUser);
   }
