@@ -31,4 +31,20 @@ public @Data class Assignment {
   private Timestamp completedAt;
 
 
+
+  public void updateDataAssignment(Assignment assignment) {
+    this.id = assignment.id;
+    this.workOrder = assignment.workOrder;
+    this.users = assignment.users;
+    this.confirmedAt = assignment.confirmedAt;
+    this.completedAt = assignment.completedAt;
+
+
+
+  }
+
+
 }
+
+
+
