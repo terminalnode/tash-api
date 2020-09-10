@@ -41,21 +41,6 @@ public @Data class User {
   private String password;
 
   /**
-   * Constructor useful for tests.
-   */
-  public User(Long id, String firstName, Boolean admin, String avatarUrl) {
-    this.id = id;
-    this.firstName = firstName;
-    this.admin = admin;
-    this.avatarUrl = avatarUrl;
-
-    this.lastName = "Lastnamingson";
-    this.longitude = 0.1;
-    this.latitude = 0.2;
-    this.password = "Super-Secret-Password-123";
-  }
-  
-  /**
    * Take another User object as only argument and replace the values of the fields in
    * this object with this the values of the field in that one. Skip sensitive fields
    * such as id and password.

@@ -32,9 +32,11 @@ public class UserControllerV1Test {
   
   @BeforeEach
   public void setUp() {
-    u1 = new User(1L, "User 1", true, "http://www.heh.se/bild.png");
-    u2 = new User(2L, "User 2", false, "http://www.lol.se/bild.jpg");
-    u3 = new User(13L, "User 13", false, "http://www.fniss.se/bild.jpg");
+    User.UserBuilder userBuilder = User.builder()
+        .lastName("Lastnamingson").longitude(0.1).latitude(0.2).password("SuperSecretPassword");
+    u1 = userBuilder.id(1L).firstName("User 1").admin(true).avatarUrl("http://www.heh.se/bild.png").build();
+    u2 = userBuilder.id(2L).firstName("User 2").admin(false).avatarUrl("http://www.lol.se/bild.jpg").build();
+    u3 = userBuilder.id(13L).firstName("User 13").admin(false).avatarUrl("http://www.fniss.se/bild.jpg").build();
     allUsers = new ArrayList<>();
     allUsers.add(u1);
     allUsers.add(u2);
@@ -102,6 +104,4 @@ public class UserControllerV1Test {
     twinUser.setId(savedUser.getId());
     assertThat(savedUser).isEqualTo(twinUser);
   }
-
-
 }
