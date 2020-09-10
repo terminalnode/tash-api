@@ -1,11 +1,15 @@
 package se.newton.tash.restapi.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
+@Builder
+@AllArgsConstructor
 public @Data class User {
   @Id
   @Column(name = "id")
