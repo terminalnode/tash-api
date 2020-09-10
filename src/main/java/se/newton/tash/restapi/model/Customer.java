@@ -20,4 +20,13 @@ public @Data class Customer {
 
   @Column(name = "description")
   private String description;
+
+  public void updateDataWithCustomer(Customer customer) {
+    this.name = customer.name;
+    this.email = customer.email;
+    this.description = customer.description;
+
+  }
 }
+
+
