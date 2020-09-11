@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import se.newton.tash.restapi.model.User;
 import se.newton.tash.restapi.repository.UserRepository;
+import se.newton.tash.restapi.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,20 +15,17 @@ public class UserControllerV1 {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private UserService userService;
+
   @GetMapping
   public List<User> fetchAllUsers() {
-    return userRepository.findAll();
+    return userService.fetchAllUsers();
   }
 
   @GetMapping("/{id}")
   public User fetchUserById(@PathVariable Long id) {
-    Optional<User> user = userRepository.findById(id);
-    
-    if (user.isPresent()) {
-      return user.get();
-    } else {
-      throw new IllegalArgumentException("The requested user does not exist.");
-    }
+    return userService.fetchUserOrExceptionById(id);
   }
 
   @PostMapping

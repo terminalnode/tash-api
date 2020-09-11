@@ -5,10 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.User;
 import se.newton.tash.restapi.repository.UserRepository;
+import se.newton.tash.restapi.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,12 @@ public class UserControllerV1Test {
   @InjectMocks
   UserControllerV1 userController;
 
-  @Spy
+  @Mock
+  UserService userService;
+
+  @Mock
   UserRepository userRepository;
-  
+
   User u1, u2, u3;
   User.UserBuilder newUserBuilder;
   List<User> allUsers;
@@ -54,7 +58,6 @@ public class UserControllerV1Test {
         .avatarUrl("https://www.burgerking.se/burgerbuilder2000.png")
         .password("burger4lifexoxoxo");
 
-    when(userRepository.findAll()).thenReturn(allUsers);
     when(userRepository.findById(any())).thenReturn(Optional.empty());
     when(userRepository.findById(1L)).thenReturn(Optional.of(u1));
     when(userRepository.findById(2L)).thenReturn(Optional.of(u2));
@@ -62,30 +65,17 @@ public class UserControllerV1Test {
   }
 
   @Test
-  public void testFetchAllUsers() {
-    List<User> result = userController.fetchAllUsers();
-    assertThat(result.size()).isEqualTo(3);
-    assertThat(result)
-        .contains(u1)
-        .contains(u2)
-        .contains(u3);
+  public void fetchAllUsers_always_callsUserServiceFetchAllUsers() {
+    userController.fetchAllUsers();
+    verify(userService, times(1))
+        .fetchAllUsers();
   }
 
   @Test
-  public void testFetchUserByValidId() {
-    User result = userController.fetchUserById(1L);
-    assertThat(result)
-        .isEqualTo(u1)
-        .isNotEqualTo(u2)
-        .isNotEqualTo(u3);
-  }
-
-  @Test
-  public void testFetchUserByInvalidId() {
-    Assertions.assertThrows(
-        IllegalArgumentException.class,
-        () -> userController.fetchUserById(100L)
-    );
+  public void fetchUserById_always_callsUserServiceFetchUserOrExceptionById() {
+    userController.fetchUserById(-100L);
+    verify(userService, times(1))
+        .fetchUserOrExceptionById(-100L);
   }
 
   @Test
@@ -117,7 +107,7 @@ public class UserControllerV1Test {
         () -> userController.updateExistingUser(user)
     );
   }
-  
+
   @Test
   public void testUpdateUserWithValidId() {
     // Update u1 with controller.
