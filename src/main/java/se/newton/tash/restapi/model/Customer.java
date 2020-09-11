@@ -21,6 +21,13 @@ public @Data class Customer {
   @Column(name = "description")
   private String description;
 
+
+  public Customer (Long id, String name, String descrption) {
+    this.id = id;
+    this.name = name;
+    this.description = descrption;
+  }
+
   public void updateDataWithCustomer(Customer customer) {
     this.name = customer.name;
     this.email = customer.email;
