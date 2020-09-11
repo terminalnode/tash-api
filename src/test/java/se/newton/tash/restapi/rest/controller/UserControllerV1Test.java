@@ -139,4 +139,27 @@ public class UserControllerV1Test {
     twinUser.setPassword(oldPassword);
     assertThat(updatedUser).isEqualTo(twinUser);
   }
+
+  @Test
+  public void testDeleteUserWithInvalidId() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userController.deleteUserById(-1L)
+    );
+  }
+
+  @Test
+  public void testDeleteUserWithValidId() {
+    // Try deleting u1 by id
+    userController.deleteUserById(u1.getId());
+
+    // Verify that exactly one user was created and capture that user.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .delete(userCaptor.capture());
+    User deletedUser = userCaptor.getValue();
+
+    // Verify that the correct user was deleted.
+    assertThat(deletedUser).isEqualTo(u1);
+  }
 }
