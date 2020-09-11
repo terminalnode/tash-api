@@ -34,36 +34,32 @@ public class UserServiceImplTest {
 
   @BeforeEach
   public void setUp() {
-    User.UserBuilder userBuilder = User.builder()
-        .lastName("Lastnamingson").longitude(0.1).latitude(0.2).password("SuperSecretPassword");
-    u1 = userBuilder.id(1L).firstName("User 1").admin(true).avatarUrl("http://www.heh.se/bild.png").build();
-    u2 = userBuilder.id(2L).firstName("User 2").admin(false).avatarUrl("http://www.lol.se/bild.jpg").build();
-    u3 = userBuilder.id(13L).firstName("User 13").admin(false).avatarUrl("http://www.fniss.se/bild.jpg").build();
-    allUsers = new ArrayList<>();
-    allUsers.add(u1);
-    allUsers.add(u2);
-    allUsers.add(u3);
-
     newUserBuilder = User.builder()
-        .id(-1L)
-        .email("lotta.shmotta@burgerking.se")
-        .firstName("Lotta")
-        .lastName("Shmotta")
-        .admin(false)
-        .longitude(0.1)
-        .latitude(0.9)
-        .avatarUrl("https://www.burgerking.se/burgerbuilder2000.png")
-        .password("burger4lifexoxoxo");
+        .firstName("Firstname").lastName("Lastnamingson").admin(false)
+        .longitude(0.1).latitude(0.2).password("SuperSecretPassword")
+        .avatarUrl("wwww.coolabilder.se/minBild.jpg");
+    u1 = newUserBuilder.id(1L).firstName("User 1").admin(true).avatarUrl("http://www.heh.se/bild.png").build();
+    u2 = newUserBuilder.id(2L).firstName("User 2").admin(false).avatarUrl("http://www.lol.se/bild.jpg").build();
+    u3 = newUserBuilder.id(13L).firstName("User 13").admin(false).avatarUrl("http://www.fniss.se/bild.jpg").build();
 
-    when(userRepository.findAll()).thenReturn(allUsers);
+    // Change UserBuilder field values to make sure they're different from above.
+    newUserBuilder
+        .firstName("New Firstname").lastName("New Lastnamingson").admin(true)
+        .longitude(0.3).latitude(0.4).password("NewSuperSecretPassword")
+        .avatarUrl("wwww.fulabilder.se/minBild.jpg");
+
     when(userRepository.findById(any())).thenReturn(Optional.empty());
     when(userRepository.findById(u1.getId())).thenReturn(Optional.of(u1));
-    when(userRepository.findById(u2.getId())).thenReturn(Optional.of(u2));
-    when(userRepository.findById(u3.getId())).thenReturn(Optional.of(u3));
   }
 
   @Test
   public void fetchAllUsers_whenAllUsersAreListOfThree_returnsThatList() {
+    allUsers = new ArrayList<>();
+    allUsers.add(u1);
+    allUsers.add(u2);
+    allUsers.add(u3);
+    when(userRepository.findAll()).thenReturn(allUsers);
+
     List<User> result = userService.fetchAllUsers();
     assertThat(result.size()).isEqualTo(3);
     assertThat(result)
@@ -208,7 +204,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  public void deleteUserOrNullById_whenUserIdDoesNotExist_callsUserRepositoryDeleteAndReturnsUser() {
+  public void deleteUserOrNullById_whenUserIdDoes_callsUserRepositoryDeleteAndReturnsUser() {
     // Try deleting u1 by id
     userService.deleteUserOrNullById(u1.getId());
 
@@ -222,7 +218,6 @@ public class UserServiceImplTest {
     // Verify that the correct user was deleted.
     assertThat(deletedUser).isEqualTo(u1);
   }
-
 
   @Test
   public void deleteUserOrExceptionById_whenUserIdIsNull_throwsExceptionAndDoesNotCallDelete() {
@@ -245,7 +240,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  public void deleteUserOrExceptionById_whenUserIdDoesNotExist_callsUserRepositoryDeleteAndReturnsUser() {
+  public void deleteUserOrExceptionById_whenUserIdDoes_callsUserRepositoryDeleteAndReturnsUser() {
     // Try deleting u1 by id
     userService.deleteUserOrExceptionById(u1.getId());
     
