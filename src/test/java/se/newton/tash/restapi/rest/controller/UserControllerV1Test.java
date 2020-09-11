@@ -126,7 +126,8 @@ public class UserControllerV1Test {
     String oldPassword = u1.getPassword();
     userController.updateExistingUser(user);
     
-    // Verify that exactly one user was created and capture that user.
+    // Verify that the update call was done exactly once and capture the
+    // user object with which it was called.
     ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
     verify(userRepository, times(1))
         .save(userCaptor.capture());
@@ -153,7 +154,8 @@ public class UserControllerV1Test {
     // Try deleting u1 by id
     userController.deleteUserById(u1.getId());
 
-    // Verify that exactly one user was created and capture that user.
+    // Verify that the delete call was done exactly once and capture the
+    // user object with which it was called.
     ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
     verify(userRepository, times(1))
         .delete(userCaptor.capture());
