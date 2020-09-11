@@ -3,6 +3,7 @@ package se.newton.tash.restapi.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Table(name = "users")
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public @Data class User {
   @Id
   @Column(name = "id")
@@ -39,6 +41,9 @@ public @Data class User {
 
   @Column(name = "password")
   private String password;
+
+  @Column(name = "token")
+  private String token;
 
   /**
    * Take another User object as only argument and replace the values of the fields in

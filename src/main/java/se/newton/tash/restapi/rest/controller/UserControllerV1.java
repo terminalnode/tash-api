@@ -3,7 +3,6 @@ package se.newton.tash.restapi.rest.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import se.newton.tash.restapi.model.User;
-import se.newton.tash.restapi.repository.UserRepository;
 import se.newton.tash.restapi.service.UserService;
 
 import java.util.List;
@@ -11,9 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserControllerV1 {
-  @Autowired
-  private UserRepository userRepository;
-
   @Autowired
   private UserService userService;
 
