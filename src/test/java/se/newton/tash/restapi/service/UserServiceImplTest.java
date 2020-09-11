@@ -119,4 +119,75 @@ public class UserServiceImplTest {
     twinUser.setId(savedUser.getId());
     assertThat(savedUser).isEqualTo(twinUser);
   }
+  
+  @Test
+  public void updateExistingUserOrNull_whenUserIdIsNull_returnsNull() {
+    User updatedUser = newUserBuilder.id(null).build();
+    User result = userService.updateExistingUserOrNull(updatedUser);
+    assertThat(result).isEqualTo(null);
+  }
+
+  @Test
+  public void updateExistingUserOrNull_whenUserIdDoesNotExist_returnsNull() {
+    User updatedUser = newUserBuilder.id(666L).build();
+    User result = userService.updateExistingUserOrNull(updatedUser);
+    assertThat(result).isEqualTo(null);
+  }
+
+  @Test
+  public void updateExistingUserOrNull_whenUserIdDoes_returnsUpdatedUser() {
+    // Create new user with controller.
+    User newUserData = newUserBuilder.id(u1.getId()).build();
+    User twinUserData = newUserBuilder.id(u1.getId()).build();
+    userService.updateExistingUserOrNull(newUserData);
+
+    // Verify that exactly one user was created and capture that user.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .save(userCaptor.capture());
+    User savedUser = userCaptor.getValue();
+
+    // Verify that user was saved with identical user info, except for password.
+    // Password can only be updated separately.
+    assertThat(savedUser).isNotEqualTo(twinUserData);
+    assertThat(savedUser.getPassword()).isEqualTo(u1.getPassword());
+    twinUserData.setPassword(u1.getPassword());
+    assertThat(savedUser).isEqualTo(twinUserData);
+  }
+
+  @Test
+  public void updateExistingUserOrException_whenUserIdIsNull_throwsException() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userService.updateExistingUserOrException(newUserBuilder.id(null).build())
+    );
+  }
+
+  @Test
+  public void updateExistingUserOrException_whenUserIdDoesNotExist_throwsException() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userService.updateExistingUserOrException(newUserBuilder.id(666L).build())
+    );
+  }
+
+  @Test
+  public void updateExistingUserOrException_whenUserIdDoes_returnsUpdatedUser() {
+    User newUserData = newUserBuilder.id(u1.getId()).build();
+    User twinUserData = newUserBuilder.id(u1.getId()).build();
+    userService.updateExistingUserOrException(newUserData);
+
+    // Verify that exactly one user was created and capture that user.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .save(userCaptor.capture());
+    User savedUser = userCaptor.getValue();
+
+    // Verify that user was saved with identical user info, except for password.
+    // Password can only be updated separately.
+    assertThat(savedUser).isNotEqualTo(twinUserData);
+    assertThat(savedUser.getPassword()).isEqualTo(u1.getPassword());
+    twinUserData.setPassword(u1.getPassword());
+    assertThat(savedUser).isEqualTo(twinUserData);
+  }
 }

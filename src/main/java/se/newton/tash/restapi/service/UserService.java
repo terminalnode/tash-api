@@ -9,4 +9,6 @@ public interface UserService {
   User fetchUserOrNullById(Long id);
   User fetchUserOrExceptionById(Long id);
   User createNewUser(User newUser);
+  User updateExistingUserOrNull(User newUserData);
+  User updateExistingUserOrException(User newUserData);
 }

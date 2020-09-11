@@ -35,15 +35,7 @@ public class UserControllerV1 {
 
   @PutMapping
   public User updateExistingUser(@RequestBody User updatedUser) {
-    Optional<User> user = userRepository.findById(updatedUser.getId());
-    
-    if (user.isPresent()) {
-      User userWithNewData = user.get();
-      userWithNewData.updateDataWithUser(updatedUser);
-      return userRepository.save(userWithNewData);
-    } else {
-      throw new IllegalArgumentException("The requested user does not exist.");
-    }
+    return userService.updateExistingUserOrException(updatedUser);
   }
 
   @DeleteMapping("{id}")

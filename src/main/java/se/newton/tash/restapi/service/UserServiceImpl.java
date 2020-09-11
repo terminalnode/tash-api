@@ -40,4 +40,32 @@ public class UserServiceImpl implements UserService {
     newUser.setId(0L);
     return userRepository.save(newUser);
   }
+
+  @Override
+  public User updateExistingUserOrNull(User newUserData) {
+    if (newUserData.getId() == null) return null;
+
+    Optional<User> optDbUser = userRepository.findById(newUserData.getId());
+    if (optDbUser.isEmpty()) {
+      return null;
+    } else {
+      User dbUser = optDbUser.get();
+      dbUser.updateDataWithUser(newUserData);
+      return userRepository.save(dbUser);
+    }
+  }
+
+  @Override
+  public User updateExistingUserOrException(User newUserData) {
+    if (newUserData.getId() == null) {
+      throw new IllegalArgumentException("No ID specified, can not update user.");
+    }
+    
+    Optional<User> optDbUser = userRepository.findById(newUserData.getId());
+    User dbUser = optDbUser
+        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist."));
+
+    dbUser.updateDataWithUser(newUserData);
+    return userRepository.save(dbUser);
+  }
 }

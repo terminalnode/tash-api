@@ -88,59 +88,12 @@ public class UserControllerV1Test {
         .createNewUser(newUser);
   }
 
-  /*
   @Test
-  public void testCreateNewUser() {
-    // Create new user with controller.
-    User newUser = newUserBuilder.build();
-    User twinUser = newUserBuilder.build();
-    userController.createNewUser(newUser);
-
-    // Verify that exactly one user was created and capture that user.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository, times(1))
-        .save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
-
-    // Verify that user was saved with identical user info, except for ID.
-    // Any ID >= 0 is accepted, to allow for different implementations.
-    assertThat(savedUser).isNotEqualTo(twinUser);
-    assertThat(savedUser.getId()).isGreaterThanOrEqualTo(0);
-    twinUser.setId(savedUser.getId());
-    assertThat(savedUser).isEqualTo(twinUser);
-  }
-   */
-
-  @Test
-  public void testUpdateUserWithInvalidId() {
-    User user = newUserBuilder.id(-1L).build();
-    Assertions.assertThrows(
-        IllegalArgumentException.class,
-        () -> userController.updateExistingUser(user)
-    );
-  }
-
-  @Test
-  public void testUpdateUserWithValidId() {
-    // Update u1 with controller.
-    User user = newUserBuilder.id(u1.getId()).build();
-    User twinUser = newUserBuilder.id(u1.getId()).build();
-    String oldPassword = u1.getPassword();
+  public void updateExistingUser_always_callsUserServiceUpdateExistingUserOrException() {
+    User user = newUserBuilder.id(666L).build();
     userController.updateExistingUser(user);
-    
-    // Verify that the update call was done exactly once and capture the
-    // user object with which it was called.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository, times(1))
-        .save(userCaptor.capture());
-    User updatedUser = userCaptor.getValue();
-
-    // Verify that user was saved with identical info, except for password
-    // which should not be updated in this way.
-    assertThat(updatedUser).isNotEqualTo(twinUser);
-    assertThat(updatedUser.getPassword()).isEqualTo(oldPassword);
-    twinUser.setPassword(oldPassword);
-    assertThat(updatedUser).isEqualTo(twinUser);
+    verify(userService, times(1))
+        .updateExistingUserOrException(user);
   }
 
   @Test
