@@ -11,4 +11,6 @@ public interface UserService {
   User createNewUser(User newUser);
   User updateExistingUserOrNull(User newUserData);
   User updateExistingUserOrException(User newUserData);
+  User deleteUserOrNullById(Long id);
+  User deleteUserOrExceptionById(Long id);
 }

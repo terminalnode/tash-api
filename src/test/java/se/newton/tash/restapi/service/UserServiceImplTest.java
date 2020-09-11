@@ -172,7 +172,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  public void updateExistingUserOrException_whenUserIdDoes_returnsUpdatedUser() {
+  public void updateExistingUserOrException_whenUserIdDoesExist_returnsUpdatedUser() {
     User newUserData = newUserBuilder.id(u1.getId()).build();
     User twinUserData = newUserBuilder.id(u1.getId()).build();
     userService.updateExistingUserOrException(newUserData);
@@ -189,5 +189,74 @@ public class UserServiceImplTest {
     assertThat(savedUser.getPassword()).isEqualTo(u1.getPassword());
     twinUserData.setPassword(u1.getPassword());
     assertThat(savedUser).isEqualTo(twinUserData);
+  }
+
+  @Test
+  public void deleteUserOrNullById_whenUserIdIsNull_returnsNullAndDoesNotInvokeDelete() {
+    User result = userService.deleteUserOrNullById(null);
+    verify(userRepository, times(0))
+        .delete(any());
+    assertThat(result).isEqualTo(null);
+  }
+
+  @Test
+  public void deleteUserOrNullById_whenUserIdDoesNotExist_returnsNullAndDoesNotInvokeDelete() {
+    User result = userService.deleteUserOrNullById(666L);
+    verify(userRepository, times(0))
+        .delete(any());
+    assertThat(result).isEqualTo(null);
+  }
+
+  @Test
+  public void deleteUserOrNullById_whenUserIdDoesNotExist_callsUserRepositoryDeleteAndReturnsUser() {
+    // Try deleting u1 by id
+    userService.deleteUserOrNullById(u1.getId());
+
+    // Verify that the delete call was done exactly once and capture the
+    // user object with which it was called.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .delete(userCaptor.capture());
+    User deletedUser = userCaptor.getValue();
+
+    // Verify that the correct user was deleted.
+    assertThat(deletedUser).isEqualTo(u1);
+  }
+
+
+  @Test
+  public void deleteUserOrExceptionById_whenUserIdIsNull_throwsExceptionAndDoesNotCallDelete() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userService.deleteUserOrExceptionById(null)
+    );
+    verify(userRepository, times(0))
+        .delete(any());
+  }
+
+  @Test
+  public void deleteUserOrExceptionById_whenUserIdDoesNotExist_throwsExceptionAndDoesNotCallDelete() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userService.deleteUserOrExceptionById(666L)
+    );
+    verify(userRepository, times(0))
+        .delete(any());
+  }
+
+  @Test
+  public void deleteUserOrExceptionById_whenUserIdDoesNotExist_callsUserRepositoryDeleteAndReturnsUser() {
+    // Try deleting u1 by id
+    userService.deleteUserOrExceptionById(u1.getId());
+    
+    // Verify that the delete call was done exactly once and capture the
+    // user object with which it was called.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .delete(userCaptor.capture());
+    User deletedUser = userCaptor.getValue();
+
+    // Verify that the correct user was deleted.
+    assertThat(deletedUser).isEqualTo(u1);
   }
 }

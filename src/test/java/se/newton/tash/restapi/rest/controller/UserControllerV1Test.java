@@ -1,9 +1,7 @@
 package se.newton.tash.restapi.rest.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,11 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class UserControllerV1Test {
@@ -97,26 +92,9 @@ public class UserControllerV1Test {
   }
 
   @Test
-  public void testDeleteUserWithInvalidId() {
-    Assertions.assertThrows(
-        IllegalArgumentException.class,
-        () -> userController.deleteUserById(-1L)
-    );
-  }
-
-  @Test
-  public void testDeleteUserWithValidId() {
-    // Try deleting u1 by id
-    userController.deleteUserById(u1.getId());
-
-    // Verify that the delete call was done exactly once and capture the
-    // user object with which it was called.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository, times(1))
-        .delete(userCaptor.capture());
-    User deletedUser = userCaptor.getValue();
-
-    // Verify that the correct user was deleted.
-    assertThat(deletedUser).isEqualTo(u1);
+  public void deleteUserById_always_callsUserServiceDeleteUserOrExceptionById() {
+    userController.deleteUserById(666L);
+    verify(userService, times(1))
+        .deleteUserOrExceptionById(666L);
   }
 }

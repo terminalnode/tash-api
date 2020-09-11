@@ -68,4 +68,24 @@ public class UserServiceImpl implements UserService {
     dbUser.updateDataWithUser(newUserData);
     return userRepository.save(dbUser);
   }
+
+  @Override
+  public User deleteUserOrNullById(Long id) {
+    if (id == null) return null;
+    User user = fetchUserOrNullById(id);
+    if (user == null) return null;
+
+    userRepository.delete(user);
+    return user;
+  }
+
+  @Override
+  public User deleteUserOrExceptionById(Long id) {
+    if (id == null) throw new IllegalArgumentException("The specified user does not exist.");
+    User user = fetchUserOrNullById(id);
+    if (user == null) throw new IllegalArgumentException("The specified user does not exist.");
+
+    userRepository.delete(user);
+    return user;
+  }
 }

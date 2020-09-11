@@ -7,7 +7,6 @@ import se.newton.tash.restapi.repository.UserRepository;
 import se.newton.tash.restapi.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -40,13 +39,6 @@ public class UserControllerV1 {
 
   @DeleteMapping("{id}")
   public User deleteUserById(@PathVariable Long id) {
-    Optional<User> user = userRepository.findById(id);
-
-    if (user.isPresent()) {
-      userRepository.delete(user.get());
-      return user.get();
-    } else {
-      throw new IllegalArgumentException("The requested user does not exist.");
-    }
+    return userService.deleteUserOrExceptionById(id);
   }
 }
