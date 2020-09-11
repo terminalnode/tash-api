@@ -28,6 +28,7 @@ public class UserControllerV1Test {
   UserRepository userRepository;
   
   User u1, u2, u3;
+  User.UserBuilder newUserBuilder;
   List<User> allUsers;
   
   @BeforeEach
@@ -41,6 +42,17 @@ public class UserControllerV1Test {
     allUsers.add(u1);
     allUsers.add(u2);
     allUsers.add(u3);
+    
+    newUserBuilder = User.builder()
+        .id(-1L)
+        .email("lotta.shmotta@burgerking.se")
+        .firstName("Lotta")
+        .lastName("Shmotta")
+        .admin(false)
+        .longitude(0.1)
+        .latitude(0.9)
+        .avatarUrl("https://www.burgerking.se/burgerbuilder2000.png")
+        .password("burger4lifexoxoxo");
 
     when(userRepository.findAll()).thenReturn(allUsers);
     when(userRepository.findById(any())).thenReturn(Optional.empty());
@@ -79,18 +91,8 @@ public class UserControllerV1Test {
   @Test
   public void testCreateNewUser() {
     // Create new user with controller.
-    User.UserBuilder userBuilder = User.builder()
-        .id(-1L)
-        .email("lotta.shmotta@burgerking.se")
-        .firstName("Lotta")
-        .lastName("Shmotta")
-        .admin(false)
-        .longitude(0.1)
-        .latitude(0.9)
-        .avatarUrl("https://www.burgerking.se/burgerbuilder2000.png")
-        .password("burger4lifexoxoxo");
-    User newUser = userBuilder.build();
-    User twinUser = userBuilder.build();
+    User newUser = newUserBuilder.build();
+    User twinUser = newUserBuilder.build();
     userController.createNewUser(newUser);
 
     // Verify that exactly one user was created and capture that user.
@@ -105,5 +107,36 @@ public class UserControllerV1Test {
     assertThat(savedUser.getId()).isGreaterThanOrEqualTo(0);
     twinUser.setId(savedUser.getId());
     assertThat(savedUser).isEqualTo(twinUser);
+  }
+
+  @Test
+  public void testUpdateUserWithInvalidId() {
+    User user = newUserBuilder.id(-1L).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> userController.updateExistingUser(user)
+    );
+  }
+  
+  @Test
+  public void testUpdateUserWithValidId() {
+    // Update u1 with controller.
+    User user = newUserBuilder.id(u1.getId()).build();
+    User twinUser = newUserBuilder.id(u1.getId()).build();
+    String oldPassword = u1.getPassword();
+    userController.updateExistingUser(user);
+    
+    // Verify that exactly one user was created and capture that user.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .save(userCaptor.capture());
+    User updatedUser = userCaptor.getValue();
+
+    // Verify that user was saved with identical info, except for password
+    // which should not be updated in this way.
+    assertThat(updatedUser).isNotEqualTo(twinUser);
+    assertThat(updatedUser.getPassword()).isEqualTo(oldPassword);
+    twinUser.setPassword(oldPassword);
+    assertThat(updatedUser).isEqualTo(twinUser);
   }
 }
