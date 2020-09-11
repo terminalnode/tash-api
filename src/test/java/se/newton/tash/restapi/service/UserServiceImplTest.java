@@ -3,6 +3,7 @@ package se.newton.tash.restapi.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +16,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 public class UserServiceImplTest {
@@ -93,5 +96,27 @@ public class UserServiceImplTest {
   public void fetchUserOrExceptionById_whenUserDoesExist_returnsUser() {
     User result = userService.fetchUserOrExceptionById(u1.getId());
     assertThat(result).isEqualTo(u1);
+  }
+
+  @Test
+  public void createNewUser_withSpecifiedUserId_createsUserWithUserIdZero() {
+    // Create new user with controller.
+    newUserBuilder.id(666L);
+    User newUser = newUserBuilder.build();
+    User twinUser = newUserBuilder.build();
+    userService.createNewUser(newUser);
+
+    // Verify that exactly one user was created and capture that user.
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository, times(1))
+        .save(userCaptor.capture());
+    User savedUser = userCaptor.getValue();
+
+    // Verify that user was saved with identical user info, except for ID.
+    // Any ID >= 0 is accepted, to allow for different implementations.
+    assertThat(savedUser).isNotEqualTo(twinUser);
+    assertThat(savedUser.getId()).isGreaterThanOrEqualTo(0);
+    twinUser.setId(savedUser.getId());
+    assertThat(savedUser).isEqualTo(twinUser);
   }
 }

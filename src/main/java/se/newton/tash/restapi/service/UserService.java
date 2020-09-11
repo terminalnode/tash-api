@@ -8,4 +8,5 @@ public interface UserService {
   List<User> fetchAllUsers();
   User fetchUserOrNullById(Long id);
   User fetchUserOrExceptionById(Long id);
+  User createNewUser(User newUser);
 }

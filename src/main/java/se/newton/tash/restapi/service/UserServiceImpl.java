@@ -34,4 +34,10 @@ public class UserServiceImpl implements UserService {
     }
     return user;
   }
+
+  @Override
+  public User createNewUser(User newUser) {
+    newUser.setId(0L);
+    return userRepository.save(newUser);
+  }
 }

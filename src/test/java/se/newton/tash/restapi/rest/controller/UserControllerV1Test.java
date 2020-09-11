@@ -17,7 +17,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 public class UserControllerV1Test {
@@ -79,6 +81,15 @@ public class UserControllerV1Test {
   }
 
   @Test
+  public void createNewUser_always_callsUserServiceCreateNewUser() {
+    User newUser = newUserBuilder.build();
+    userController.createNewUser(newUser);
+    verify(userService, times(1))
+        .createNewUser(newUser);
+  }
+
+  /*
+  @Test
   public void testCreateNewUser() {
     // Create new user with controller.
     User newUser = newUserBuilder.build();
@@ -98,6 +109,7 @@ public class UserControllerV1Test {
     twinUser.setId(savedUser.getId());
     assertThat(savedUser).isEqualTo(twinUser);
   }
+   */
 
   @Test
   public void testUpdateUserWithInvalidId() {
