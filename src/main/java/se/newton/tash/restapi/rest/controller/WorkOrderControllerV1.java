@@ -7,6 +7,7 @@ import se.newton.tash.restapi.model.WorkOrder;
 import se.newton.tash.restapi.repository.WorkOrderRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/work_orders")
@@ -48,9 +49,14 @@ public class WorkOrderControllerV1 {
 
   @DeleteMapping("/{id}")
   public WorkOrder deleteWorkOrderById(@PathVariable long id) {
-    WorkOrder deletedWorkOrder = workOrderRepository.findById(id).get();
-    workOrderRepository.deleteById(id);
-    return deletedWorkOrder;
+    Optional<WorkOrder> workOrder = workOrderRepository.findById(id);
+
+    if (workOrder.isPresent()) {
+      workOrderRepository.delete(workOrder.get());
+      return workOrder.get();
+    } else {
+      throw new IllegalArgumentException("The requested work order does not exist.");
+    }
   }
 
 

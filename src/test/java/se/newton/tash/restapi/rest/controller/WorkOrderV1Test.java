@@ -169,4 +169,28 @@ public class WorkOrderV1Test {
     );
   }
 
+  @Test
+  public void testDeleteWorkOrderWithValidID() {
+    // Try deleting testWorkOrder1 by id
+    workOrderController.deleteWorkOrderById(testWorkOrder1.getId());
+
+    ArgumentCaptor<WorkOrder> workOrderCaptor = ArgumentCaptor.forClass(WorkOrder.class);
+    verify(workOrderRepository, times(1))
+        .delete(workOrderCaptor.capture());
+    WorkOrder deletedWorkOrder = workOrderCaptor.getValue();
+
+    // Confirm that the right work order was deleted
+    assertThat(deletedWorkOrder).isEqualTo(testWorkOrder1);
+
+
+  }
+
+  @Test
+  public void testDeleteWorkOrderWithInvalidId() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> workOrderController.deleteWorkOrderById(-1L)
+    );
+  }
+
 }
