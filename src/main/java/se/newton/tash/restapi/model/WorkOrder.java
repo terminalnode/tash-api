@@ -1,6 +1,8 @@
 package se.newton.tash.restapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "work_orders")
+@Builder
+@AllArgsConstructor
 public @Data class WorkOrder {
 
   @Id
@@ -56,5 +60,7 @@ public @Data class WorkOrder {
     this.completedAt = completedAt;
 
   }
+
+  // ----- Builder ----- //
 
 }

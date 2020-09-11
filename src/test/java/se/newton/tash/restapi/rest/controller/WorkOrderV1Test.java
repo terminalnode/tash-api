@@ -1,12 +1,13 @@
 package se.newton.tash.restapi.rest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.hibernate.jdbc.Work;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,16 +31,22 @@ public class WorkOrderV1Test {
   @Mock
   WorkOrderRepository workOrderRepository;
 
-  WorkOrder testWorkOrder1, testWorkOrder2, testWorkOrder3, testWorkOrder4;
+  WorkOrder testWorkOrder1, testWorkOrder2, testWorkOrder3;
   List<WorkOrder> testListOfAllWorkOrders;
 
   @BeforeEach
   public void setUp()  {
-    testWorkOrder1 = new WorkOrder(1L, "TestWorkOrder1", "The description of work order 1.", 33.6773, -106.4754, new Date(1L), new Date(2L));
-    testWorkOrder2 = new WorkOrder(2L, "TestWorkOrder2", "The description of work order 2.", 33.6773, -106.4754, new Date(2L), new Date(3L));
-    testWorkOrder3 = new WorkOrder(3L, "TestWorkOrder3", "The description of work order 3.", 33.6773, -106.4754, new Date(3L), new Date(4L));
+    WorkOrder.WorkOrderBuilder workOrderBuilder = WorkOrder.builder()
+        .longitude(33.6773)
+        .latitude(-106.4754)
+        .createdAt(new Date(1L))
+        .completedAt(new Date(2L));
 
-    testWorkOrder4 = new WorkOrder(4L, "TestWorkOrder4", "The description of work order 4, which is added to the list later possibly by magic.", 33.6773, -106.4754, new Date(4L), new Date(5L));
+
+
+    testWorkOrder1 = workOrderBuilder.id(1L).title("TestWorkOrder1").description("The description of work order 1.").build();
+    testWorkOrder2 = workOrderBuilder.id(2L).title("TestWorkOrder2").description("The description of work order 2.").build();
+    testWorkOrder3 = workOrderBuilder.id(3L).title("TestWorkOrder3").description("The description of work order 3.").build();
 
     testListOfAllWorkOrders = new ArrayList<>();
     testListOfAllWorkOrders.add(testWorkOrder1);
@@ -51,6 +58,7 @@ public class WorkOrderV1Test {
     when(workOrderRepository.findById(1L)).thenReturn(Optional.of(testWorkOrder1));
     when(workOrderRepository.findById(2L)).thenReturn(Optional.of(testWorkOrder2));
     when(workOrderRepository.findById(3L)).thenReturn(Optional.of(testWorkOrder3));
+    when(workOrderRepository.existsById(3L)).thenReturn(true);
 
 
 
@@ -85,11 +93,80 @@ public class WorkOrderV1Test {
   @Test
   public void testCreateNewWorkOrder() {
 
+    WorkOrder.WorkOrderBuilder workOrderBuilder = WorkOrder.builder()
+        .id(-1L)
+        .title("TestWorkOrder4")
+        .description("A new test work order created to be saved in a test.")
+        .latitude(33.6773)
+        .longitude(-106.4754)
+        .createdAt(new Date(4L))
+        .completedAt(new Date(5L));
 
+    WorkOrder testWorkOrder4 = workOrderBuilder.build();
+    WorkOrder notTestWorkOrder4 = workOrderBuilder.build();
 
+    workOrderController.createNewWorkOrder(testWorkOrder4);
 
+    //Confirm that one (and only one) new workOrder was created
+    //and save the argument used to save it.
+    ArgumentCaptor<WorkOrder> workOrderCaptor = ArgumentCaptor.forClass(WorkOrder.class);
+    verify(workOrderRepository, times(1))
+        .save(workOrderCaptor.capture());
+    WorkOrder savedWorkOrder = workOrderCaptor.getValue();
+
+    // Verify that work order was saved with identical information in all fields except for ID.
+    // Any ID >= 0 is accepted.
+    assertThat(savedWorkOrder).isNotEqualTo(notTestWorkOrder4);
+    assertThat(savedWorkOrder.getId()).isGreaterThanOrEqualTo(0);
+    notTestWorkOrder4.setId(savedWorkOrder.getId());
+    assertThat(savedWorkOrder).isEqualTo(notTestWorkOrder4);
 
   }
 
+  @Test
+  public void testUpdateExistingWorkOrderWithValidID() {
+
+    WorkOrder.WorkOrderBuilder workOrderBuilder = WorkOrder.builder()
+        .id(3L)
+        .title("NewTestWorkOrder3")
+        .description("An updated version of the  previous work order.")
+        .latitude(33.6773)
+        .longitude(-106.4754)
+        .createdAt(new Date(4L))
+        .completedAt(new Date(5L));
+
+    WorkOrder workOrderUpdater = workOrderBuilder.build();
+
+    workOrderController.updateExistingWorkOrder(workOrderUpdater);
+
+    //Verify that the update function was called once, and save the argument used.
+    ArgumentCaptor<WorkOrder> workOrderCaptor = ArgumentCaptor.forClass(WorkOrder.class);
+    verify(workOrderRepository, times(1))
+        .save(workOrderCaptor.capture());
+    WorkOrder updatedWorkOrder = workOrderCaptor.getValue();
+
+    // Verify that the argument used to update is equal to the starting data.
+    assertThat(workOrderUpdater).isEqualTo(updatedWorkOrder);
+
+  }
+
+  @Test
+  public void testUpdateExistingWorkOrderWithInvalidID() {
+
+    WorkOrder.WorkOrderBuilder workOrderBuilder = WorkOrder.builder()
+        .id(-1337L)
+        .title("NewTestWorkOrder3")
+        .description("An updated version of the  previous work order.")
+        .latitude(33.6773)
+        .longitude(-106.4754)
+        .createdAt(new Date(4L))
+        .completedAt(new Date(5L));
+
+    WorkOrder workOrderUpdater = workOrderBuilder.build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> workOrderController.updateExistingWorkOrder(workOrderUpdater)
+    );
+  }
 
 }
