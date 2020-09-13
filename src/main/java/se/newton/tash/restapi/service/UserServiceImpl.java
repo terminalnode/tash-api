@@ -22,21 +22,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User fetchUserOrNullById(Long id) {
-    if (id == null) {
-      return null;
-    }
-    
-    Optional<User> fetchedUser = userRepository.findById(id);
-    return fetchedUser.orElse(null);
+    return userRepository.findById(id)
+        .orElse(null);
   }
 
   @Override
   public User fetchUserOrExceptionById(Long id) {
-    User user = fetchUserOrNullById(id);
-    if (user == null) {
-      throw new IllegalArgumentException("The requested user does not exist.");
-    }
-    return user;
+    return userRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
   }
 
   @Override
@@ -47,46 +40,32 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User updateExistingUserOrNull(User newUserData) {
-    User user = fetchUserOrNullById(newUserData.getId());
-    if (user == null) {
-      return null;
-    }
+    Optional<User> user = userRepository.findById(newUserData.getId());
+    user.ifPresent(u -> u.updateDataWithUser(newUserData));
+    return user.map(value -> userRepository.save(value))
+        .orElse(null);
+  }
+
+  @Override
+  public User updateExistingUserOrException(User newUserData) {
+    User user = userRepository.findById(newUserData.getId())
+        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
 
     user.updateDataWithUser(newUserData);
     return userRepository.save(user);
   }
 
   @Override
-  public User updateExistingUserOrException(User newUserData) {
-    if (newUserData.getId() == null) {
-      throw new IllegalArgumentException("No ID specified, can not update user.");
-    }
-    
-    Optional<User> optDbUser = userRepository.findById(newUserData.getId());
-    User dbUser = optDbUser
-        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist."));
-
-    dbUser.updateDataWithUser(newUserData);
-    return userRepository.save(dbUser);
-  }
-
-  @Override
   public User deleteUserOrNullById(Long id) {
-    User user = fetchUserOrNullById(id);
-    if (user == null) {
-      return null;
-    }
-
-    userRepository.delete(user);
-    return user;
+    Optional<User> user = userRepository.findById(id);
+    user.ifPresent(u -> userRepository.delete(u));
+    return user.orElse(null);
   }
 
   @Override
   public User deleteUserOrExceptionById(Long id) {
-    User user = fetchUserOrNullById(id);
-    if (user == null) {
-      throw new IllegalArgumentException("The specified user does not exist.");
-    }
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
 
     userRepository.delete(user);
     return user;

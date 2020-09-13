@@ -188,18 +188,14 @@ public class UserServiceImplTest {
   }
 
   @Test
-  public void deleteUserOrNullById_whenUserIdIsNull_returnsNullAndDoesNotInvokeDelete() {
+  public void deleteUserOrNullById_whenUserIdIsNull_returnsNull() {
     User result = userService.deleteUserOrNullById(null);
-    verify(userRepository, times(0))
-        .delete(any());
     assertThat(result).isEqualTo(null);
   }
 
   @Test
-  public void deleteUserOrNullById_whenUserIdDoesNotExist_returnsNullAndDoesNotInvokeDelete() {
+  public void deleteUserOrNullById_whenUserIdDoesNotExist_returnsNull() {
     User result = userService.deleteUserOrNullById(666L);
-    verify(userRepository, times(0))
-        .delete(any());
     assertThat(result).isEqualTo(null);
   }
 
