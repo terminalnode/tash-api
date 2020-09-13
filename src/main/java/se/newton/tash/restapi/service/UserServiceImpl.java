@@ -22,7 +22,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User fetchUserOrNullById(Long id) {
-    if (id == null) return null;
+    if (id == null) {
+      return null;
+    }
     
     Optional<User> fetchedUser = userRepository.findById(id);
     return fetchedUser.orElse(null);
@@ -45,16 +47,13 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User updateExistingUserOrNull(User newUserData) {
-    if (newUserData.getId() == null) return null;
-
-    Optional<User> optDbUser = userRepository.findById(newUserData.getId());
-    if (optDbUser.isEmpty()) {
+    User user = fetchUserOrNullById(newUserData.getId());
+    if (user == null) {
       return null;
-    } else {
-      User dbUser = optDbUser.get();
-      dbUser.updateDataWithUser(newUserData);
-      return userRepository.save(dbUser);
     }
+
+    user.updateDataWithUser(newUserData);
+    return userRepository.save(user);
   }
 
   @Override
@@ -73,9 +72,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User deleteUserOrNullById(Long id) {
-    if (id == null) return null;
     User user = fetchUserOrNullById(id);
-    if (user == null) return null;
+    if (user == null) {
+      return null;
+    }
 
     userRepository.delete(user);
     return user;
@@ -83,9 +83,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User deleteUserOrExceptionById(Long id) {
-    if (id == null) throw new IllegalArgumentException("The specified user does not exist.");
     User user = fetchUserOrNullById(id);
-    if (user == null) throw new IllegalArgumentException("The specified user does not exist.");
+    if (user == null) {
+      throw new IllegalArgumentException("The specified user does not exist.");
+    }
 
     userRepository.delete(user);
     return user;
