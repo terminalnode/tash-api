@@ -8,7 +8,7 @@ import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.service.TashUserService;
 
 @Component
-public class ContextRefreshedEventListener {
+public class TashUserSeeder {
   @Autowired
   TashUserService userService;
 
@@ -18,7 +18,11 @@ public class ContextRefreshedEventListener {
    */
   @EventListener
   public void seed(ContextRefreshedEvent event) {
-    seedUserModel();
+    userService.createNewUser(userGenerator("Aesop", "Rock", true));
+    userService.createNewUser(userGenerator("Britney", "Spears", false));
+    userService.createNewUser(userGenerator("Björk", "Guðmundsdóttir", false));
+    userService.createNewUser(userGenerator("Marilyn", "Manson", false));
+    userService.createNewUser(userGenerator("Taylor", "Swift", false));
   }
 
   private String urlFriendly(String s) {
@@ -43,13 +47,5 @@ public class ContextRefreshedEventListener {
         .email(String.format("%s.%s@mycooldomain.xyz", urlFirstName, urlLastName))
         .avatarUrl(String.format("https://www.mycooldomain.xyz/%s_%s.png", urlFirstName, urlLastName))
         .build();
-  }
-
-  public void seedUserModel() {
-    userService.createNewUser(userGenerator("Aesop", "Rock", true));
-    userService.createNewUser(userGenerator("Britney", "Spears", false));
-    userService.createNewUser(userGenerator("Björk", "Guðmundsdóttir", false));
-    userService.createNewUser(userGenerator("Marilyn", "Manson", false));
-    userService.createNewUser(userGenerator("Taylor", "Swift", false));
   }
 }
