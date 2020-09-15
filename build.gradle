@@ -30,6 +30,11 @@ dependencies {
 	}
 }
 
+copy {
+  from "./githooks/pre-push"
+  into "./.git/hooks"
+}
+
 test {
 	useJUnitPlatform()
 }
