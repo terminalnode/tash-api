@@ -3,7 +3,6 @@ package se.newton.tash.restapi.rest.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import org.hibernate.jdbc.Work;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import se.newton.tash.restapi.model.User;
 import se.newton.tash.restapi.model.WorkOrder;
-import se.newton.tash.restapi.repository.UserRepository;
 import se.newton.tash.restapi.repository.WorkOrderRepository;
 
 import java.util.ArrayList;

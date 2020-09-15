@@ -7,14 +7,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import se.newton.tash.restapi.service.UserService;
+import se.newton.tash.restapi.service.TashUserService;
 
 import java.util.Optional;
 
 @Component
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
   @Autowired
-  UserService userService;
+  TashUserService tashUserService;
 
   @Override
   protected void additionalAuthenticationChecks(
@@ -34,7 +34,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
     return Optional
         .ofNullable(token)
         .map(String::valueOf)
-        .flatMap(userService::findByToken)
+        .flatMap(tashUserService::findByToken)
         .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with authentication token" + token));
   }
 }

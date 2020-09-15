@@ -3,16 +3,13 @@ package se.newton.tash.restapi.rest.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.sun.xml.bind.v2.TODO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.Customer;
-import se.newton.tash.restapi.model.User;
 import se.newton.tash.restapi.repository.CustomerRepository;
-import se.newton.tash.restapi.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

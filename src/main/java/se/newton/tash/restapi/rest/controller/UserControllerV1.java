@@ -2,8 +2,8 @@ package se.newton.tash.restapi.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import se.newton.tash.restapi.model.User;
-import se.newton.tash.restapi.service.UserService;
+import se.newton.tash.restapi.model.TashUser;
+import se.newton.tash.restapi.service.TashUserService;
 
 import java.util.List;
 
@@ -11,30 +11,30 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class UserControllerV1 {
   @Autowired
-  private UserService userService;
+  private TashUserService tashUserService;
 
   @GetMapping
-  public List<User> fetchAllUsers() {
-    return userService.fetchAllUsers();
+  public List<TashUser> fetchAllUsers() {
+    return tashUserService.fetchAllUsers();
   }
 
   @GetMapping("/{id}")
-  public User fetchUserById(@PathVariable Long id) {
-    return userService.fetchUserOrExceptionById(id);
+  public TashUser fetchUserById(@PathVariable Long id) {
+    return tashUserService.fetchUserOrExceptionById(id);
   }
 
   @PostMapping
-  public User createNewUser(@RequestBody User newUser) {
-    return userService.createNewUser(newUser);
+  public TashUser createNewUser(@RequestBody TashUser newTashUser) {
+    return tashUserService.createNewUser(newTashUser);
   }
 
   @PutMapping
-  public User updateExistingUser(@RequestBody User updatedUser) {
-    return userService.updateExistingUserOrException(updatedUser);
+  public TashUser updateExistingUser(@RequestBody TashUser updatedTashUser) {
+    return tashUserService.updateExistingUserOrException(updatedTashUser);
   }
 
   @DeleteMapping("{id}")
-  public User deleteUserById(@PathVariable Long id) {
-    return userService.deleteUserOrExceptionById(id);
+  public TashUser deleteUserById(@PathVariable Long id) {
+    return tashUserService.deleteUserOrExceptionById(id);
   }
 }

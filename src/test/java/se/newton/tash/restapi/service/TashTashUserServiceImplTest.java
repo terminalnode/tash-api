@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
-import se.newton.tash.restapi.model.User;
+import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -21,20 +21,20 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-public class UserServiceImplTest {
+public class TashTashUserServiceImplTest {
   @InjectMocks
-  UserServiceImpl userService;
+  TashUserServiceImpl userService;
 
   @Spy
   UserRepository userRepository;
 
-  User u1, u2, u3;
-  User.UserBuilder newUserBuilder;
-  List<User> allUsers;
+  TashUser u1, u2, u3;
+  TashUser.TashUserBuilder newUserBuilder;
+  List<TashUser> allTashUsers;
 
   @BeforeEach
   public void setUp() {
-    newUserBuilder = User.builder()
+    newUserBuilder = TashUser.builder()
         .firstName("Firstname").lastName("Lastnamingson").admin(false)
         .longitude(0.1).latitude(0.2).password("SuperSecretPassword")
         .avatarUrl("wwww.coolabilder.se/minBild.jpg");
@@ -54,13 +54,13 @@ public class UserServiceImplTest {
 
   @Test
   public void fetchAllUsers_whenAllUsersAreListOfThree_returnsThatList() {
-    allUsers = new ArrayList<>();
-    allUsers.add(u1);
-    allUsers.add(u2);
-    allUsers.add(u3);
-    when(userRepository.findAll()).thenReturn(allUsers);
+    allTashUsers = new ArrayList<>();
+    allTashUsers.add(u1);
+    allTashUsers.add(u2);
+    allTashUsers.add(u3);
+    when(userRepository.findAll()).thenReturn(allTashUsers);
 
-    List<User> result = userService.fetchAllUsers();
+    List<TashUser> result = userService.fetchAllUsers();
     assertThat(result.size()).isEqualTo(3);
     assertThat(result)
         .contains(u1)
@@ -70,13 +70,13 @@ public class UserServiceImplTest {
 
   @Test
   public void fetchUserOrNullById_whenUserDoesNotExist_returnsNull() {
-    User result = userService.fetchUserOrNullById(100L);
+    TashUser result = userService.fetchUserOrNullById(100L);
     assertThat(result).isEqualTo(null);
   }
 
   @Test
   public void fetchUserOrNullById_whenUserDoesExist_returnsUser() {
-    User result = userService.fetchUserOrNullById(u1.getId());
+    TashUser result = userService.fetchUserOrNullById(u1.getId());
     assertThat(result).isEqualTo(u1);
   }
 
@@ -90,7 +90,7 @@ public class UserServiceImplTest {
   
   @Test
   public void fetchUserOrExceptionById_whenUserDoesExist_returnsUser() {
-    User result = userService.fetchUserOrExceptionById(u1.getId());
+    TashUser result = userService.fetchUserOrExceptionById(u1.getId());
     assertThat(result).isEqualTo(u1);
   }
 
@@ -98,57 +98,57 @@ public class UserServiceImplTest {
   public void createNewUser_withSpecifiedUserId_createsUserWithUserIdZero() {
     // Create new user with controller.
     newUserBuilder.id(666L);
-    User newUser = newUserBuilder.build();
-    User twinUser = newUserBuilder.build();
-    userService.createNewUser(newUser);
+    TashUser newTashUser = newUserBuilder.build();
+    TashUser twinTashUser = newUserBuilder.build();
+    userService.createNewUser(newTashUser);
 
     // Verify that exactly one user was created and capture that user.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
     verify(userRepository, times(1))
         .save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
+    TashUser savedTashUser = userCaptor.getValue();
 
     // Verify that user was saved with identical user info, except for ID.
     // Any ID >= 0 is accepted, to allow for different implementations.
-    assertThat(savedUser).isNotEqualTo(twinUser);
-    assertThat(savedUser.getId()).isGreaterThanOrEqualTo(0);
-    twinUser.setId(savedUser.getId());
-    assertThat(savedUser).isEqualTo(twinUser);
+    assertThat(savedTashUser).isNotEqualTo(twinTashUser);
+    assertThat(savedTashUser.getId()).isGreaterThanOrEqualTo(0);
+    twinTashUser.setId(savedTashUser.getId());
+    assertThat(savedTashUser).isEqualTo(twinTashUser);
   }
   
   @Test
   public void updateExistingUserOrNull_whenUserIdIsNull_returnsNull() {
-    User updatedUser = newUserBuilder.id(null).build();
-    User result = userService.updateExistingUserOrNull(updatedUser);
+    TashUser updatedTashUser = newUserBuilder.id(null).build();
+    TashUser result = userService.updateExistingUserOrNull(updatedTashUser);
     assertThat(result).isEqualTo(null);
   }
 
   @Test
   public void updateExistingUserOrNull_whenUserIdDoesNotExist_returnsNull() {
-    User updatedUser = newUserBuilder.id(666L).build();
-    User result = userService.updateExistingUserOrNull(updatedUser);
+    TashUser updatedTashUser = newUserBuilder.id(666L).build();
+    TashUser result = userService.updateExistingUserOrNull(updatedTashUser);
     assertThat(result).isEqualTo(null);
   }
 
   @Test
   public void updateExistingUserOrNull_whenUserIdDoes_returnsUpdatedUser() {
     // Create new user with controller.
-    User newUserData = newUserBuilder.id(u1.getId()).build();
-    User twinUserData = newUserBuilder.id(u1.getId()).build();
-    userService.updateExistingUserOrNull(newUserData);
+    TashUser newTashUserData = newUserBuilder.id(u1.getId()).build();
+    TashUser twinTashUserData = newUserBuilder.id(u1.getId()).build();
+    userService.updateExistingUserOrNull(newTashUserData);
 
     // Verify that exactly one user was created and capture that user.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
     verify(userRepository, times(1))
         .save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
+    TashUser savedTashUser = userCaptor.getValue();
 
     // Verify that user was saved with identical user info, except for password.
     // Password can only be updated separately.
-    assertThat(savedUser).isNotEqualTo(twinUserData);
-    assertThat(savedUser.getPassword()).isEqualTo(u1.getPassword());
-    twinUserData.setPassword(u1.getPassword());
-    assertThat(savedUser).isEqualTo(twinUserData);
+    assertThat(savedTashUser).isNotEqualTo(twinTashUserData);
+    assertThat(savedTashUser.getPassword()).isEqualTo(u1.getPassword());
+    twinTashUserData.setPassword(u1.getPassword());
+    assertThat(savedTashUser).isEqualTo(twinTashUserData);
   }
 
   @Test
@@ -169,33 +169,33 @@ public class UserServiceImplTest {
 
   @Test
   public void updateExistingUserOrException_whenUserIdDoesExist_returnsUpdatedUser() {
-    User newUserData = newUserBuilder.id(u1.getId()).build();
-    User twinUserData = newUserBuilder.id(u1.getId()).build();
-    userService.updateExistingUserOrException(newUserData);
+    TashUser newTashUserData = newUserBuilder.id(u1.getId()).build();
+    TashUser twinTashUserData = newUserBuilder.id(u1.getId()).build();
+    userService.updateExistingUserOrException(newTashUserData);
 
     // Verify that exactly one user was created and capture that user.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
     verify(userRepository, times(1))
         .save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
+    TashUser savedTashUser = userCaptor.getValue();
 
     // Verify that user was saved with identical user info, except for password.
     // Password can only be updated separately.
-    assertThat(savedUser).isNotEqualTo(twinUserData);
-    assertThat(savedUser.getPassword()).isEqualTo(u1.getPassword());
-    twinUserData.setPassword(u1.getPassword());
-    assertThat(savedUser).isEqualTo(twinUserData);
+    assertThat(savedTashUser).isNotEqualTo(twinTashUserData);
+    assertThat(savedTashUser.getPassword()).isEqualTo(u1.getPassword());
+    twinTashUserData.setPassword(u1.getPassword());
+    assertThat(savedTashUser).isEqualTo(twinTashUserData);
   }
 
   @Test
   public void deleteUserOrNullById_whenUserIdIsNull_returnsNull() {
-    User result = userService.deleteUserOrNullById(null);
+    TashUser result = userService.deleteUserOrNullById(null);
     assertThat(result).isEqualTo(null);
   }
 
   @Test
   public void deleteUserOrNullById_whenUserIdDoesNotExist_returnsNull() {
-    User result = userService.deleteUserOrNullById(666L);
+    TashUser result = userService.deleteUserOrNullById(666L);
     assertThat(result).isEqualTo(null);
   }
 
@@ -206,13 +206,13 @@ public class UserServiceImplTest {
 
     // Verify that the delete call was done exactly once and capture the
     // user object with which it was called.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
     verify(userRepository, times(1))
         .delete(userCaptor.capture());
-    User deletedUser = userCaptor.getValue();
+    TashUser deletedTashUser = userCaptor.getValue();
 
     // Verify that the correct user was deleted.
-    assertThat(deletedUser).isEqualTo(u1);
+    assertThat(deletedTashUser).isEqualTo(u1);
   }
 
   @Test
@@ -242,12 +242,12 @@ public class UserServiceImplTest {
     
     // Verify that the delete call was done exactly once and capture the
     // user object with which it was called.
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
     verify(userRepository, times(1))
         .delete(userCaptor.capture());
-    User deletedUser = userCaptor.getValue();
+    TashUser deletedTashUser = userCaptor.getValue();
 
     // Verify that the correct user was deleted.
-    assertThat(deletedUser).isEqualTo(u1);
+    assertThat(deletedTashUser).isEqualTo(u1);
   }
 }

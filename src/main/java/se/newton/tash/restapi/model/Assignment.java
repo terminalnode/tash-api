@@ -22,7 +22,7 @@ public @Data class Assignment {
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id")
-  private User users;
+  private TashUser users;
 
   @Column(name = "confirmed_at")
   private Timestamp confirmedAt;
