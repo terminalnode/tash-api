@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-public class TashTashUserServiceImplTest {
+public class TashUserServiceImplTest {
   @InjectMocks
   TashUserServiceImpl userService;
 
