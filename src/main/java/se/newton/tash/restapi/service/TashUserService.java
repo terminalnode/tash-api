@@ -3,7 +3,6 @@ package se.newton.tash.restapi.service;
 import se.newton.tash.restapi.model.TashUser;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TashUserService {
   List<TashUser> fetchAllUsers();
@@ -14,6 +13,6 @@ public interface TashUserService {
   TashUser updateExistingUserOrException(TashUser newTashUserData);
   TashUser deleteUserOrNullById(Long id);
   TashUser deleteUserOrExceptionById(Long id);
-  Optional<org.springframework.security.core.userdetails.User> findByToken(String token);
+  TashUser findByTokenOrNull(String token);
   String login(String email, String password);
 }

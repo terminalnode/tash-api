@@ -37,4 +37,5 @@ copy {
 
 test {
 	useJUnitPlatform()
+	// testLogging.showStandardStreams(true)
 }

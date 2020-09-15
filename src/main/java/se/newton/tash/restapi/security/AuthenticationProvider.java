@@ -1,20 +1,25 @@
 package se.newton.tash.restapi.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import se.newton.tash.restapi.service.TashUserService;
+import se.newton.tash.restapi.model.TashUser;
+import se.newton.tash.restapi.repository.TashUserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
   @Autowired
-  TashUserService tashUserService;
+  TashUserRepository tashUserRepository;
 
   @Override
   protected void additionalAuthenticationChecks(
@@ -29,12 +34,20 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
       String username,
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
   ) throws AuthenticationException {
-    Object token = usernamePasswordAuthenticationToken.getCredentials();
-
-    return Optional
-        .ofNullable(token)
+    TashUser user = Optional
+        .ofNullable(usernamePasswordAuthenticationToken.getCredentials())
         .map(String::valueOf)
-        .flatMap(tashUserService::findByToken)
-        .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with authentication token" + token));
+        .flatMap(tashUserRepository::findByToken)
+        .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+
+    // TODO We can conditionally add authorities to this list. Probably.
+    List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER");
+
+    return new User(
+        user.getEmail(), user.getPassword(),
+        true, true,
+        true, true,
+        authorities
+    );
   }
 }

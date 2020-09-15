@@ -1,8 +1,7 @@
 package se.newton.tash.restapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.repository.TashUserRepository;
@@ -14,7 +13,11 @@ import java.util.UUID;
 @Service
 public class TashUserServiceImpl implements TashUserService {
   @Autowired
-  private TashUserRepository tashUserRepository;
+  TashUserRepository tashUserRepository;
+
+  @Autowired
+  PasswordEncoder passwordEncoder;
+
 
   @Override
   public List<TashUser> fetchAllUsers() {
@@ -36,6 +39,8 @@ public class TashUserServiceImpl implements TashUserService {
   @Override
   public TashUser createNewUser(TashUser newTashUser) {
     newTashUser.setId(0L);
+    String encryptedPassword = passwordEncoder.encode(newTashUser.getPassword());
+    newTashUser.setPassword(encryptedPassword);
     return tashUserRepository.save(newTashUser);
   }
 
@@ -73,28 +78,23 @@ public class TashUserServiceImpl implements TashUserService {
   }
 
   @Override
-  public Optional<User> findByToken(String token) {
-    Optional<TashUser> optionalUser = tashUserRepository.findByToken(token);
-    if (optionalUser.isPresent()) {
-      TashUser dbTashUser = optionalUser.get();
-      User user =
-          new User(
-              dbTashUser.getEmail(), dbTashUser.getPassword(),
-              true, true, true, true,
-              AuthorityUtils.createAuthorityList("USER")
-          );
-      return Optional.of(user);
-    }
-    return Optional.empty();
+  public TashUser findByTokenOrNull(String token) {
+    return tashUserRepository.findByToken(token).orElse(null);
   }
 
   @Override
   public String login(String email, String password) {
-    TashUser tashUser = tashUserRepository.findByEmailAndPassword(email, password);
-    if (tashUser != null) {
+    Optional<TashUser> tashUser = tashUserRepository.findByEmail(email);
+    boolean passwordCorrect = tashUser
+        .map(u -> passwordEncoder.matches(password, u.getPassword()))
+        .orElse(false);
+
+    if (passwordCorrect) {
+      TashUser user = tashUser.get();
       String token = UUID.randomUUID().toString();
-      tashUser.setToken(token);
-      tashUserRepository.save(tashUser);
+      user.setToken(token);
+
+      tashUserRepository.save(user);
       return token;
     }
     

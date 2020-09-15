@@ -5,8 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.repository.TashUserRepository;
 
@@ -16,26 +17,29 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class TashUserServiceImplTest {
   @InjectMocks
   TashUserServiceImpl userService;
 
-  @Spy
+  @Mock
   TashUserRepository tashUserRepository;
+
+  @Mock
+  PasswordEncoder passwordEncoder;
 
   TashUser u1, u2, u3;
   TashUser.TashUserBuilder newUserBuilder;
   List<TashUser> allTashUsers;
+  String encryptedPassword;
 
   @BeforeEach
   public void setUp() {
     newUserBuilder = TashUser.builder()
         .firstName("Firstname").lastName("Lastnamingson").admin(false)
+        .email("mycoolemail@email.com").token("")
         .longitude(0.1).latitude(0.2).password("SuperSecretPassword")
         .avatarUrl("wwww.coolabilder.se/minBild.jpg");
     u1 = newUserBuilder.id(1L).firstName("User 1").admin(true).avatarUrl("http://www.heh.se/bild.png").build();
@@ -50,6 +54,9 @@ public class TashUserServiceImplTest {
 
     when(tashUserRepository.findById(any())).thenReturn(Optional.empty());
     when(tashUserRepository.findById(u1.getId())).thenReturn(Optional.of(u1));
+
+    encryptedPassword = "CorrectHorseBatteryStapler";
+    when(passwordEncoder.encode(any())).thenReturn(encryptedPassword);
   }
 
   @Test
@@ -110,9 +117,17 @@ public class TashUserServiceImplTest {
 
     // Verify that user was saved with identical user info, except for ID.
     // Any ID >= 0 is accepted, to allow for different implementations.
-    assertThat(savedTashUser).isNotEqualTo(twinTashUser);
+    String savedPassword = savedTashUser.getPassword();
+    String oldPassword = twinTashUser.getPassword();
+
+    // Check password and ID
     assertThat(savedTashUser.getId()).isGreaterThanOrEqualTo(0);
+    assertThat(savedPassword).isEqualTo(encryptedPassword);
+    assertThat(savedPassword).isNotEqualTo(oldPassword);
+
+    // Check that everything else is the same
     twinTashUser.setId(savedTashUser.getId());
+    twinTashUser.setPassword(savedPassword);
     assertThat(savedTashUser).isEqualTo(twinTashUser);
   }
   

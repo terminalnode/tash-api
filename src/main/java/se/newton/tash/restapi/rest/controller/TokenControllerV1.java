@@ -1,6 +1,7 @@
 package se.newton.tash.restapi.rest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +21,7 @@ public class TokenControllerV1 {
   {
     String token = tashUserService.login(email, password);
     if (token == null || token.isBlank()) {
-      throw new IllegalArgumentException("Invalid username or password");
+      throw new BadCredentialsException("Invalid token");
     }
 
     return token;
