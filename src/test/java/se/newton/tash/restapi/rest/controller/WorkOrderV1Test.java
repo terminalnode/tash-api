@@ -1,27 +1,11 @@
 package se.newton.tash.restapi.rest.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import se.newton.tash.restapi.model.WorkOrder;
-import se.newton.tash.restapi.repository.WorkOrderRepository;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 
 @SpringBootTest
 public class WorkOrderV1Test {
-
+  /*
   @InjectMocks
   WorkOrderControllerV1 workOrderController;
 
@@ -189,5 +173,5 @@ public class WorkOrderV1Test {
         () -> workOrderController.deleteWorkOrderById(-1L)
     );
   }
-
+   */
 }

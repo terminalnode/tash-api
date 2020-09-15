@@ -1,8 +1,5 @@
 package se.newton.tash.restapi.rest.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,9 @@ import se.newton.tash.restapi.repository.CustomerRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class CustomerControllerV1Test {
@@ -67,19 +67,19 @@ public class CustomerControllerV1Test {
 
   @Test
   public void testFetchCustomerById1(){
-    Customer result = customerController.fetchCustomerById(-2L);
+    Customer result = customerController.fetchCustomerById(1L);
     Assertions.assertEquals(c1,result);
   }
 
   @Test
   public void testFetchCustomerById2(){
-    Customer result = customerController.fetchCustomerById(-3L);
+    Customer result = customerController.fetchCustomerById(2L);
     Assertions.assertEquals(c2,result);
   }
 
   @Test
   public void testFetchCustomerById3(){
-    Customer result = customerController.fetchCustomerById(-4L);
+    Customer result = customerController.fetchCustomerById(3L);
     Assertions.assertEquals(c3,result);
   }
 
