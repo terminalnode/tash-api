@@ -28,12 +28,6 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     String authHeader = httpServletRequest.getHeader(AUTHORIZATION);
     String token = (authHeader != null && !authHeader.isBlank()) ?
         authHeader.replaceAll("^Bearer ", "").strip() : "";
-    System.out.println("token = " + token);
-    System.out.println("token = " + token);
-    System.out.println("token = " + token);
-    System.out.println("token = " + token);
-    System.out.println("token = " + token);
-    System.out.println("token = " + token);
 
     Authentication requestAuthentication = new UsernamePasswordAuthenticationToken(token, token);
     return getAuthenticationManager().authenticate(requestAuthentication);

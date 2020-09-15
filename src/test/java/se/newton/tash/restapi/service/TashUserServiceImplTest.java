@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.TashUser;
-import se.newton.tash.restapi.repository.UserRepository;
+import se.newton.tash.restapi.repository.TashUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class TashUserServiceImplTest {
   TashUserServiceImpl userService;
 
   @Spy
-  UserRepository userRepository;
+  TashUserRepository tashUserRepository;
 
   TashUser u1, u2, u3;
   TashUser.TashUserBuilder newUserBuilder;
@@ -48,8 +48,8 @@ public class TashUserServiceImplTest {
         .longitude(0.3).latitude(0.4).password("NewSuperSecretPassword")
         .avatarUrl("wwww.fulabilder.se/minBild.jpg");
 
-    when(userRepository.findById(any())).thenReturn(Optional.empty());
-    when(userRepository.findById(u1.getId())).thenReturn(Optional.of(u1));
+    when(tashUserRepository.findById(any())).thenReturn(Optional.empty());
+    when(tashUserRepository.findById(u1.getId())).thenReturn(Optional.of(u1));
   }
 
   @Test
@@ -58,7 +58,7 @@ public class TashUserServiceImplTest {
     allTashUsers.add(u1);
     allTashUsers.add(u2);
     allTashUsers.add(u3);
-    when(userRepository.findAll()).thenReturn(allTashUsers);
+    when(tashUserRepository.findAll()).thenReturn(allTashUsers);
 
     List<TashUser> result = userService.fetchAllUsers();
     assertThat(result.size()).isEqualTo(3);
@@ -104,7 +104,7 @@ public class TashUserServiceImplTest {
 
     // Verify that exactly one user was created and capture that user.
     ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
-    verify(userRepository, times(1))
+    verify(tashUserRepository, times(1))
         .save(userCaptor.capture());
     TashUser savedTashUser = userCaptor.getValue();
 
@@ -139,7 +139,7 @@ public class TashUserServiceImplTest {
 
     // Verify that exactly one user was created and capture that user.
     ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
-    verify(userRepository, times(1))
+    verify(tashUserRepository, times(1))
         .save(userCaptor.capture());
     TashUser savedTashUser = userCaptor.getValue();
 
@@ -175,7 +175,7 @@ public class TashUserServiceImplTest {
 
     // Verify that exactly one user was created and capture that user.
     ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
-    verify(userRepository, times(1))
+    verify(tashUserRepository, times(1))
         .save(userCaptor.capture());
     TashUser savedTashUser = userCaptor.getValue();
 
@@ -207,7 +207,7 @@ public class TashUserServiceImplTest {
     // Verify that the delete call was done exactly once and capture the
     // user object with which it was called.
     ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
-    verify(userRepository, times(1))
+    verify(tashUserRepository, times(1))
         .delete(userCaptor.capture());
     TashUser deletedTashUser = userCaptor.getValue();
 
@@ -221,7 +221,7 @@ public class TashUserServiceImplTest {
         IllegalArgumentException.class,
         () -> userService.deleteUserOrExceptionById(null)
     );
-    verify(userRepository, times(0))
+    verify(tashUserRepository, times(0))
         .delete(any());
   }
 
@@ -231,7 +231,7 @@ public class TashUserServiceImplTest {
         IllegalArgumentException.class,
         () -> userService.deleteUserOrExceptionById(666L)
     );
-    verify(userRepository, times(0))
+    verify(tashUserRepository, times(0))
         .delete(any());
   }
 
@@ -243,7 +243,7 @@ public class TashUserServiceImplTest {
     // Verify that the delete call was done exactly once and capture the
     // user object with which it was called.
     ArgumentCaptor<TashUser> userCaptor = ArgumentCaptor.forClass(TashUser.class);
-    verify(userRepository, times(1))
+    verify(tashUserRepository, times(1))
         .delete(userCaptor.capture());
     TashUser deletedTashUser = userCaptor.getValue();
 

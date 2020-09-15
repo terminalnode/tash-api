@@ -30,7 +30,7 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
   ) throws AuthenticationException {
     Object token = usernamePasswordAuthenticationToken.getCredentials();
-    
+
     return Optional
         .ofNullable(token)
         .map(String::valueOf)

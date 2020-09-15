@@ -7,7 +7,7 @@ import se.newton.tash.restapi.model.TashUser;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<TashUser, Long> {
+public interface TashUserRepository extends JpaRepository<TashUser, Long> {
   TashUser findByEmailAndPassword(String email, String password);
   Optional<TashUser> findByToken(String token);
 }
