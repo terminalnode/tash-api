@@ -7,6 +7,7 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -40,8 +41,11 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
         .flatMap(tashUserRepository::findByToken)
         .orElseThrow(() -> new BadCredentialsException("Invalid token"));
 
-    // TODO We can conditionally add authorities to this list. Probably.
-    List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER");
+    // All users have the BASE privileges, administrators have the ADMIN privilege
+    List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("BASE");
+    if (user.getAdmin()) {
+      authorities.add(new SimpleGrantedAuthority("ADMIN"));
+    }
 
     return new User(
         user.getEmail(), user.getPassword(),

@@ -22,17 +22,21 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-  private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
+  AuthenticationProvider provider;
+
+  private static final RequestMatcher NO_PRIVS_REQUIRED = new OrRequestMatcher(
+      new AntPathRequestMatcher("/token/**"),
+      new AntPathRequestMatcher("/api/v*/security/none")
+  );
+
+  private static final RequestMatcher BASE_REQUIRED = new OrRequestMatcher(
       new AntPathRequestMatcher("/api/**")
   );
 
-  @Bean
-  public PasswordEncoder passwordEncoder(){
-    return new BCryptPasswordEncoder();
-  }
+  private static final RequestMatcher ADMIN_REQUIRED = new OrRequestMatcher(
+      new AntPathRequestMatcher("/api/v*/security/admin")
+  );
 
-  AuthenticationProvider provider;
-  
   public SecurityConfiguration(AuthenticationProvider authenticationProvider) {
     super();
     this.provider = authenticationProvider;
@@ -45,7 +49,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity webSecurity) throws Exception {
-    webSecurity.ignoring().antMatchers("/token/**");
+    // TODO This doesn't seem to work properly yet. When there's overlap between this and the one below the below one wins
+    webSecurity
+        .ignoring()
+        .requestMatchers(NO_PRIVS_REQUIRED);
   }
 
   @Override
@@ -53,23 +60,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     http.sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .exceptionHandling()
+          .exceptionHandling()
         .and()
-        .authenticationProvider(provider)
-        .addFilterBefore(authenticationFilter(), AnonymousAuthenticationFilter.class)
-        .authorizeRequests()
-        .requestMatchers(PROTECTED_URLS)
-        .authenticated()
+          .authenticationProvider(provider)
+          .addFilterBefore(authenticationFilter(), AnonymousAuthenticationFilter.class)
+          .authorizeRequests()
+          .requestMatchers(ADMIN_REQUIRED)
+          .hasAuthority("ADMIN")
         .and()
-        .csrf().disable()
-        .formLogin().disable()
-        .httpBasic().disable()
-        .logout().disable();
+          .authenticationProvider(provider)
+          .addFilterBefore(authenticationFilter(), AnonymousAuthenticationFilter.class)
+          .authorizeRequests()
+          .requestMatchers(BASE_REQUIRED)
+          .hasAuthority("BASE")
+        .and()
+          .csrf().disable()
+          .formLogin().disable()
+          .httpBasic().disable()
+          .logout().disable();
   }
 
   @Bean
   AuthenticationFilter authenticationFilter() throws Exception {
-    final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_URLS);
+    final AuthenticationFilter filter = new AuthenticationFilter(BASE_REQUIRED);
     filter.setAuthenticationManager(authenticationManager());
     //filter.setAuthenticationSuccessHandler(successHandler());
     return filter;
@@ -78,5 +91,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Bean
   AuthenticationEntryPoint forbiddenEntryPoint() {
     return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder(){
+    return new BCryptPasswordEncoder();
   }
 }
