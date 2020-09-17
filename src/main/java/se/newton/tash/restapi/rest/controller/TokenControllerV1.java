@@ -12,7 +12,7 @@ import se.newton.tash.restapi.service.TashUserService;
 @RequestMapping("token")
 public class TokenControllerV1 {
   @Autowired
-  private TashUserService tashUserService;
+  TashUserService tashUserService;
 
   @PostMapping
   public String getToken(

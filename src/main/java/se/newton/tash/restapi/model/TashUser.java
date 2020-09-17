@@ -1,11 +1,14 @@
 package se.newton.tash.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tash_users")
@@ -28,6 +31,7 @@ public @Data class TashUser {
   private String lastName;
   
   @Column(name = "is_admin")
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Boolean admin;
 
   @Column(name = "longitude")
@@ -40,9 +44,20 @@ public @Data class TashUser {
   private String avatarUrl;
 
   @Column(name = "password")
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
 
+  @OneToMany(
+      mappedBy = "user",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY
+  )
+  @JsonIgnore
+  List<Token> tokens;
+
   @Column(name = "token")
+  @JsonIgnore
   private String token;
 
   /**
