@@ -30,11 +30,62 @@ public class WorkOrderControllerV1Test {
   @Mock
   WorkOrderServiceImpl workOrderService;
 
+  WorkOrder.WorkOrderBuilder newWorkOrderBuilder;
+
+  @BeforeEach
+  public void setUp() {
+    newWorkOrderBuilder = WorkOrder.builder()
+        .id(-1L)
+        .title("Test Work Order")
+        .description("Test Description of test work order.")
+        .longitude(0.1)
+        .latitude(0.9)
+        .createdAt(new Date(1L))
+        .completedAt(new Date(2L));
+
+  }
+
   @Test
   public void testGetAllWorkOrders() {
     workOrderController.getAllWorkOrders();
     verify(workOrderService, times(1))
         .getAllWorkOrders();
   }
+
+  @Test
+  public void testGetWorkOrderById() {
+    workOrderController.getWorkOrderById(-1337L);
+    verify(workOrderService, times(1))
+        .getWorkOrderById(-1337L);
+  }
+
+  @Test
+  public void testCreateNewUser() {
+    WorkOrder newWorkOrder  = newWorkOrderBuilder.build();
+    workOrderController.createNewWorkOrder(newWorkOrder);
+    verify(workOrderService, times(1))
+        .createNewWorkOrder(newWorkOrder);
+  }
+
+  @Test
+  public void testUpdateExistingUse() {
+    WorkOrder newWorkOrder = newWorkOrderBuilder.id(666L).build();
+    workOrderController.updateExistingWorkOrder(newWorkOrder);
+    verify(workOrderService, times(1))
+        .updateExistingWorkOrder(newWorkOrder);
+  }
+
+  @Test
+  public void testDeleteUserById() {
+    workOrderController.deleteWorkOrderById(616L);
+    verify(workOrderService, times(1))
+        .deleteWorkOrderById(616L);
+  }
+
+
+
+
+
+
 
 }
