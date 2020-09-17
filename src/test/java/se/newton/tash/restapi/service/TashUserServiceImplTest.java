@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.repository.TashUserRepository;
@@ -53,10 +54,13 @@ public class TashUserServiceImplTest {
         .avatarUrl("wwww.fulabilder.se/minBild.jpg");
 
     when(tashUserRepository.findById(any())).thenReturn(Optional.empty());
+    when(tashUserRepository.findByEmail(any())).thenReturn(Optional.empty());
     when(tashUserRepository.findById(u1.getId())).thenReturn(Optional.of(u1));
+    when(tashUserRepository.findByEmail(u1.getEmail())).thenReturn(Optional.of(u1));
 
     encryptedPassword = "CorrectHorseBatteryStapler";
     when(passwordEncoder.encode(any())).thenReturn(encryptedPassword);
+    when(passwordEncoder.matches(eq(encryptedPassword), any())).thenReturn(true);
   }
 
   @Test
@@ -264,5 +268,47 @@ public class TashUserServiceImplTest {
 
     // Verify that the correct user was deleted.
     assertThat(deletedTashUser).isEqualTo(u1);
+  }
+
+  @Test
+  public void validateEmailAndPasswordOrNull_whenPasswordCorrect_returnsUser() {
+    assertThat(userService.validateEmailAndPasswordOrNull(u1.getEmail(), encryptedPassword))
+        .isEqualTo(u1);
+  }
+
+  @Test
+  public void validateEmailAndPasswordOrNull_whenPasswordIncorrect_returnsNull() {
+    assertThat(userService.validateEmailAndPasswordOrNull(u1.getEmail(), "some random string"))
+        .isNull();
+  }
+
+  @Test
+  public void validateEmailAndPasswordOrNull_whenUserDoesNotExist_returnsNull() {
+    assertThat(userService.validateEmailAndPasswordOrNull("not a valid email", encryptedPassword))
+        .isNull();
+  }
+
+  @Test
+  public void validateEmailAndPasswordOrException_whenPasswordCorrect_returnsUser() {
+    assertThat(userService.validateEmailAndPasswordOrException(u1.getEmail(), encryptedPassword))
+        .isEqualTo(u1);
+  }
+  
+  @Test
+  public void validateEmailAndPasswordOrException_whenPasswordIncorrect_throwsException() {
+    BadCredentialsException exc = Assertions.assertThrows(
+        BadCredentialsException.class,
+        () -> userService.validateEmailAndPasswordOrException(u1.getEmail(), "some random string")
+    );
+    assertThat(exc.getMessage()).isEqualTo("Invalid username or password");
+  }
+
+  @Test
+  public void validateEmailAndPasswordOrException_whenUserDoesNotExist_throwsException() {
+    BadCredentialsException exc = Assertions.assertThrows(
+        BadCredentialsException.class,
+        () -> userService.validateEmailAndPasswordOrException("not a valid email", encryptedPassword)
+    );
+    assertThat(exc.getMessage()).isEqualTo("Invalid username or password");
   }
 }

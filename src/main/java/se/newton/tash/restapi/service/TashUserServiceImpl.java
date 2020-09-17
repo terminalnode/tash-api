@@ -1,6 +1,7 @@
 package se.newton.tash.restapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.newton.tash.restapi.model.TashUser;
@@ -78,19 +79,16 @@ public class TashUserServiceImpl implements TashUserService {
   }
 
   @Override
+  // TODO this will be removed once token service is implemented
   public TashUser findByTokenOrNull(String token) {
     return tashUserRepository.findByToken(token).orElse(null);
   }
 
   @Override
+  // TODO this will be removed once token service is implemented
   public String login(String email, String password) {
-    Optional<TashUser> tashUser = tashUserRepository.findByEmail(email);
-    boolean passwordCorrect = tashUser
-        .map(u -> passwordEncoder.matches(password, u.getPassword()))
-        .orElse(false);
-
-    if (passwordCorrect) {
-      TashUser user = tashUser.get();
+    TashUser user = validateEmailAndPasswordOrNull(email, password);
+    if (user != null) {
       String token = UUID.randomUUID().toString();
       user.setToken(token);
 
@@ -99,5 +97,24 @@ public class TashUserServiceImpl implements TashUserService {
     }
     
     return "";
+  }
+
+  @Override
+  public TashUser validateEmailAndPasswordOrNull(String email, String password) {
+    Optional<TashUser> tashUser = tashUserRepository.findByEmail(email);
+    boolean passwordCorrect = tashUser
+        .map(u -> passwordEncoder.matches(password, u.getPassword()))
+        .orElse(false);
+    return passwordCorrect ? tashUser.get() : null;
+  }
+
+  @Override
+  public TashUser validateEmailAndPasswordOrException(String email, String password) {
+    TashUser user = validateEmailAndPasswordOrNull(email, password);
+    if (user == null) {
+      throw new BadCredentialsException("Invalid username or password");
+    }
+    
+    return user;
   }
 }
