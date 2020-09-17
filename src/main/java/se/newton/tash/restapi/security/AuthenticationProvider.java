@@ -12,7 +12,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import se.newton.tash.restapi.model.TashUser;
-import se.newton.tash.restapi.repository.TashUserRepository;
+import se.newton.tash.restapi.model.Token;
+import se.newton.tash.restapi.service.TokenService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Component
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
   @Autowired
-  TashUserRepository tashUserRepository;
+  TokenService tokenService;
 
   @Override
   protected void additionalAuthenticationChecks(
@@ -35,15 +36,19 @@ public class AuthenticationProvider extends AbstractUserDetailsAuthenticationPro
       String username,
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
   ) throws AuthenticationException {
-    TashUser user = Optional
+    Token token = Optional
         .ofNullable(usernamePasswordAuthenticationToken.getCredentials())
         .map(String::valueOf)
-        .flatMap(tashUserRepository::findByToken)
+        .map(tokenService::fetchTokenOrNull)
         .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+
+    TashUser user = Optional
+        .ofNullable(token.getUser())
+        .orElseThrow(() -> new BadCredentialsException("Could not find token's associated user"));
 
     // All users have the BASE privileges, administrators have the ADMIN privilege
     List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("BASE");
-    if (user.getAdmin()) {
+    if (token.getAdmin()) {
       authorities.add(new SimpleGrantedAuthority("ADMIN"));
     }
 

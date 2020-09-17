@@ -17,7 +17,8 @@ public @Data class Token {
   @Column(name = "token")
   String token;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "user_id")
   TashUser user;
   
   @Column(name = "is_admin")
