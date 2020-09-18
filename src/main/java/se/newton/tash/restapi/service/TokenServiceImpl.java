@@ -7,6 +7,7 @@ import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.model.Token;
 import se.newton.tash.restapi.repository.TokenRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,6 +46,10 @@ public class TokenServiceImpl implements TokenService {
   }
 
   public String invalidateToken(String token) {
-    return null;
+    Optional<Token> optToken = tokenRepository.findById(token);
+    optToken.ifPresent(tokenRepository::delete);
+    return optToken
+        .map(x -> "You have been logged out")
+        .orElseThrow(() -> new BadCredentialsException("Specified token doesn't exist. Mission accomplished?"));
   }
 }
