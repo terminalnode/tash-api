@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.Customer;
 import se.newton.tash.restapi.repository.CustomerRepository;
+import se.newton.tash.restapi.service.CustomerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,96 +25,55 @@ public class CustomerControllerV1Test {
   CustomerControllerV1 customerController;
 
   @Mock
-  CustomerRepository customerRepository;
+  CustomerService customerService;
 
-  Customer.CustomerBuilder newCustomerBuilder;
-
-  Customer c1, c2, c3;
-  List<Customer> allCustomers;
+  Customer.CustomerBuilder customerBuilder;
 
   @BeforeEach
   public void setUp() {
-    newCustomerBuilder = Customer.builder()
+    customerBuilder = Customer.builder()
         .id(-1L)
         .name("TestJocke")
         .email("testJocke@Mail.com")
         .description("test test test");
-
-    c1 = new Customer(1L, "F-Jocke", "vill köpa bröd");
-    c2 = new Customer(2L, "H-Jocke", "vill byta korv och bröd");
-    c3 = new Customer(3L, "K-Jocke", "vill köpa korv");
-    allCustomers = new ArrayList<>();
-    allCustomers.add(c1);
-    allCustomers.add(c2);
-    allCustomers.add(c3);
-
-    when(customerRepository.findAll()).thenReturn(allCustomers);
-    when(customerRepository.findById(1L)).thenReturn(Optional.of(c1));
-    when(customerRepository.findById(2L)).thenReturn(Optional.of(c2));
-    when(customerRepository.findById(3L)).thenReturn(Optional.of(c3));
-  }
-
-  // write test for true and false.
-
-  @Test
-  public void testFetchAllCustomers(){
-    List<Customer> result = customerController.fetchAllCustomers();
-    Assertions.assertEquals(3, result.size());
-    assertThat(result)
-        .contains(c1)
-        .contains(c2)
-        .contains(c3);
   }
 
   @Test
-  public void testFetchCustomerById1(){
-    Customer result = customerController.fetchCustomerById(1L);
-    Assertions.assertEquals(c1,result);
+  public void fetchAllCustomer_callsCustomerServiceFetchAllCustomers() {
+    customerController.fetchAllCustomers();
+    verify(customerService,times(1))
+        .fetchAllCustomers();
   }
 
   @Test
-  public void testFetchCustomerById2(){
-    Customer result = customerController.fetchCustomerById(2L);
-    Assertions.assertEquals(c2,result);
+  public void fetchCustomerById_callsCustomerServiceOrException() {
+    customerController.fetchCustomerById(666L);
+    verify(customerService, times(1))
+        .fetchCustomerByIdOrException(666L);
   }
 
   @Test
-  public void testFetchCustomerById3(){
-    Customer result = customerController.fetchCustomerById(3L);
-    Assertions.assertEquals(c3,result);
+  public void createNewCustomer_callsCustomerServiceCreateNewCustomerOrException() {
+    Customer customer = customerBuilder.build();
+    customerController.createNewCustomer(customer);
+    verify(customerService, times(1))
+        .createNewCustomer(customer);
   }
 
   @Test
-  public void testCreateNewCustomer(){
-    Customer.CustomerBuilder customerBuilder = Customer.builder()
-        .id(-1L)
-        .name("testJocke")
-        .email("testJocke@Mail.com")
-        .description("A new test has been created");
-
-    Customer testCustomerCreation = customerBuilder.build();
-    Customer notTestCustomerCreation = customerBuilder.build();
-
-    customerController.createNewCustomer(testCustomerCreation);
-
-    ArgumentCaptor<Customer> customerCaptor = ArgumentCaptor.forClass(Customer.class);
-    verify(customerRepository, times(1))
-        .save(customerCaptor.capture());
-    Customer savedCustomer = customerCaptor.getValue();
-
-    assertThat(savedCustomer).isNotEqualTo(notTestCustomerCreation);
-    assertThat(savedCustomer.getId()).isGreaterThanOrEqualTo(0);
-    notTestCustomerCreation.setId(savedCustomer.getId());
-    assertThat(savedCustomer).isEqualTo(notTestCustomerCreation);
+  public void updateExistingCustomer_callsCustomerServiceUpdateExistingCustomerOrException() {
+    Customer customer = customerBuilder.id(665L).build();
+    customerController.updateExistingCustomer(customer);
+    verify(customerService, times(1))
+        .updateExistingCustomerOrException(customer);
   }
 
   @Test
-  public void testEditExistingCustomer(){}
-
-  @Test
-  public void testDeleteExistingCustomer(){}
-
-
+  public void deleteCustomerById_callsCustomerServiceDeleteCustomerOrException() {
+    customerController.deleteCustomerById(666L);
+    verify(customerService, times(1))
+        .deleteCustomerByIdOrException(666L);
+  }
 
 
 

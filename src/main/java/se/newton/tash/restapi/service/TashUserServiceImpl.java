@@ -71,11 +71,9 @@ public class TashUserServiceImpl implements TashUserService {
 
   @Override
   public TashUser deleteUserOrExceptionById(Long id) {
-    TashUser tashUser = tashUserRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
-
-    tashUserRepository.delete(tashUser);
-    return tashUser;
+    Optional<TashUser> tashUser = tashUserRepository.findById(id);
+   tashUser.ifPresent(u -> tashUserRepository.delete(u));
+   return tashUser.orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
   }
 
   @Override
