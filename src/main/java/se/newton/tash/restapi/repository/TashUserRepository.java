@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface TashUserRepository extends JpaRepository<TashUser, Long> {
   Optional<TashUser> findByEmail(String email);
-  Optional<TashUser> findByToken(String token);
 }

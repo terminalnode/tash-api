@@ -40,7 +40,7 @@ public class TashUserServiceImplTest {
   public void setUp() {
     newUserBuilder = TashUser.builder()
         .firstName("Firstname").lastName("Lastnamingson").admin(false)
-        .email("mycoolemail@email.com").token("")
+        .email("mycoolemail@email.com")
         .longitude(0.1).latitude(0.2).password("SuperSecretPassword")
         .avatarUrl("wwww.coolabilder.se/minBild.jpg");
     u1 = newUserBuilder.id(1L).firstName("User 1").admin(true).avatarUrl("http://www.heh.se/bild.png").build();

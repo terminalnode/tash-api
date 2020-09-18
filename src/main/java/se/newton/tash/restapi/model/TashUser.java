@@ -56,10 +56,6 @@ public @Data class TashUser {
   @JsonIgnore
   List<Token> tokens;
 
-  @Column(name = "token")
-  @JsonIgnore
-  private String token;
-
   /**
    * Take another User object as only argument and replace the values of the fields in
    * this object with this the values of the field in that one. Skip sensitive fields

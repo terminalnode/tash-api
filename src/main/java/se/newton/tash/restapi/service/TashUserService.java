@@ -13,8 +13,6 @@ public interface TashUserService {
   TashUser updateExistingUserOrException(TashUser newTashUserData);
   TashUser deleteUserOrNullById(Long id);
   TashUser deleteUserOrExceptionById(Long id);
-  TashUser findByTokenOrNull(String token);
-  String login(String email, String password);
   TashUser validateEmailAndPasswordOrNull(String email, String password);
   TashUser validateEmailAndPasswordOrException(String email, String password);
 }

@@ -9,7 +9,6 @@ import se.newton.tash.restapi.repository.TashUserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class TashUserServiceImpl implements TashUserService {
@@ -74,27 +73,6 @@ public class TashUserServiceImpl implements TashUserService {
     Optional<TashUser> tashUser = tashUserRepository.findById(id);
    tashUser.ifPresent(u -> tashUserRepository.delete(u));
    return tashUser.orElseThrow(() -> new IllegalArgumentException("The specified user does not exist"));
-  }
-
-  @Override
-  // TODO this will be removed once token service is implemented
-  public TashUser findByTokenOrNull(String token) {
-    return tashUserRepository.findByToken(token).orElse(null);
-  }
-
-  @Override
-  // TODO this will be removed once token service is implemented
-  public String login(String email, String password) {
-    TashUser user = validateEmailAndPasswordOrNull(email, password);
-    if (user != null) {
-      String token = UUID.randomUUID().toString();
-      user.setToken(token);
-
-      tashUserRepository.save(user);
-      return token;
-    }
-    
-    return "";
   }
 
   @Override
