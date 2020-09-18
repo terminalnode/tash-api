@@ -1,9 +1,9 @@
 package se.newton.tash.restapi.rest.exceptions;
 
-public class GenericTASHException extends RuntimeException {
+public class GenericTashException extends RuntimeException {
   String internalName;
 
-  public GenericTASHException(String message, String internalName) {
+  public GenericTashException(String message, String internalName) {
     super(message);
     this.internalName = internalName;
   }
