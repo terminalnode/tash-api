@@ -1,8 +1,6 @@
 package se.newton.tash.restapi.dbseeders;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import se.newton.tash.restapi.model.TashUser;
 import se.newton.tash.restapi.service.TashUserService;
@@ -12,12 +10,7 @@ public class TashUserSeeder {
   @Autowired
   TashUserService userService;
 
-  /**
-   * Method for seeding the database with example data.
-   * @param event The ContextRefreshedEvent that this method listens for.
-   */
-  @EventListener
-  public void seed(ContextRefreshedEvent event) {
+  public void seed() {
     userService.createNewUser(userGenerator("Aesop", "Rock", true));
     userService.createNewUser(userGenerator("Britney", "Spears", false));
     userService.createNewUser(userGenerator("Björk", "Guðmundsdóttir", false));
