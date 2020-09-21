@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.newton.tash.restapi.model.WorkOrder;
 import se.newton.tash.restapi.repository.WorkOrderRepository;
+import se.newton.tash.restapi.rest.exceptions.workorderexceptions.WorkOrderIdNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,8 +28,6 @@ public class WorkOrderServiceImplTest {
     @Mock
     WorkOrderRepository workOrderRepository;
 
-
-
     WorkOrder testWorkOrder1, testWorkOrder2, testWorkOrder3;
     List<WorkOrder> testListOfAllWorkOrders;
 
@@ -39,7 +38,6 @@ public class WorkOrderServiceImplTest {
           .latitude(-106.4754)
           .createdAt(new Date(1L))
           .completedAt(new Date(2L));
-
 
 
       testWorkOrder1 = workOrderBuilder.id(1L).title("TestWorkOrder1").description("The description of work order 1.").build();
@@ -56,6 +54,8 @@ public class WorkOrderServiceImplTest {
       when(workOrderRepository.findById(1L)).thenReturn(Optional.of(testWorkOrder1));
       when(workOrderRepository.findById(2L)).thenReturn(Optional.of(testWorkOrder2));
       when(workOrderRepository.findById(3L)).thenReturn(Optional.of(testWorkOrder3));
+      when(workOrderRepository.existsById(1L)).thenReturn(true);
+      when(workOrderRepository.existsById(2L)).thenReturn(true);
       when(workOrderRepository.existsById(3L)).thenReturn(true);
 
 
@@ -163,7 +163,7 @@ public class WorkOrderServiceImplTest {
 
       WorkOrder workOrderUpdater = workOrderBuilder.build();
       Assertions.assertThrows(
-          IllegalArgumentException.class,
+          WorkOrderIdNotFoundException.class,
           () -> workOrderService.updateExistingWorkOrder(workOrderUpdater)
       );
     }
@@ -187,7 +187,7 @@ public class WorkOrderServiceImplTest {
     @Test
     public void testDeleteWorkOrderWithInvalidId() {
       Assertions.assertThrows(
-          IllegalArgumentException.class,
+          WorkOrderIdNotFoundException.class,
           () -> workOrderService.deleteWorkOrderById(-1L)
       );
     }

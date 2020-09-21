@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.newton.tash.restapi.model.WorkOrder;
 import se.newton.tash.restapi.repository.WorkOrderRepository;
+import se.newton.tash.restapi.rest.exceptions.workorderexceptions.WorkOrderIdNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
   }
 
   public WorkOrder getWorkOrderById(long id) {
-    return workOrderRepository.findById(id).get();
+    if (workOrderRepository.existsById(id)) {
+      return workOrderRepository.findById(id).get();
+    }
+    else {
+      throw new WorkOrderIdNotFoundException(
+          String.format("Work order with id %d not found",
+              id)
+      );
+    }
   }
 
   public WorkOrder createNewWorkOrder(WorkOrder workOrder) {
@@ -36,7 +45,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
       return updatedWorkOrder;
     }
     else {
-      throw new IllegalArgumentException("The ID specified does not exist in the workOrder table.");
+      throw new WorkOrderIdNotFoundException(
+          String.format("Work order with id %d not found",
+              workOrder.getId())
+      );
     }
 
   }
@@ -48,7 +60,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
       workOrderRepository.delete(workOrder.get());
       return workOrder.get();
     } else {
-      throw new IllegalArgumentException("The requested work order does not exist.");
+      throw new WorkOrderIdNotFoundException(
+          String.format("Work order with id %d not found",
+              id)
+      );
     }
   }
 
