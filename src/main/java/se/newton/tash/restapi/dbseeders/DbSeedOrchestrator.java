@@ -19,6 +19,9 @@ public class DbSeedOrchestrator {
   @Autowired
   WorkOrderSeeder workOrderSeeder;
 
+  @Autowired
+  AssignmentSeeder assignmentSeeder;
+
   /**
    * Method for triggering all other seeders in the right order.
    * @param event The ContextRefreshedEvent that this method listens for.
@@ -29,6 +32,6 @@ public class DbSeedOrchestrator {
     tokenSeeder.seed();
     customerSeeder.seed();
     workOrderSeeder.seed();
-    // TODO Add assignment seed
+    assignmentSeeder.seed();
   }
 }
