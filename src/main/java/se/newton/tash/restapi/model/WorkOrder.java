@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.util.Date;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "work_orders")
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public @Data class WorkOrder {
 
   @Id
@@ -33,7 +33,7 @@ public @Data class WorkOrder {
   @Column(name = "latitude")
   private double latitude;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
