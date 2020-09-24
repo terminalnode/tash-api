@@ -34,7 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   );
 
   private static final RequestMatcher ADMIN_REQUIRED = new OrRequestMatcher(
-      new AntPathRequestMatcher("/api/v*/security/admin")
+      new AntPathRequestMatcher("/api/v*/security/admin"),
+      new AntPathRequestMatcher("/api/v*/users/")
   );
 
   public SecurityConfiguration(AuthenticationProvider authenticationProvider) {
