@@ -1,20 +1,31 @@
 package se.newton.tash.restapi.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.sql.Timestamp;
 
 
 @Entity
 @Table(name = "assignments")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public @Data class Assignment {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private long id;
+
+  @Column(name = "title")
+  private String title;
+
+  @Column(name = "description")
+  private String description;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "work_order_id")
@@ -32,19 +43,10 @@ public @Data class Assignment {
 
 
 
-  public void updateDataAssignment(Assignment assignment) {
-    this.id = assignment.id;
-    this.workOrder = assignment.workOrder;
-    this.users = assignment.users;
-    this.confirmedAt = assignment.confirmedAt;
-    this.completedAt = assignment.completedAt;
-
-
 
   }
 
 
-}
 
 
 
