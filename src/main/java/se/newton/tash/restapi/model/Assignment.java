@@ -19,7 +19,7 @@ public @Data class Assignment {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private long id;
+  private Long id;
 
   @Column(name = "title")
   private String title;

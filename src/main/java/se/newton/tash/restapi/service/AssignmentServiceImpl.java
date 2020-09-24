@@ -19,41 +19,29 @@ public class AssignmentServiceImpl implements AssignmentService {
     return assignmentRepository.findAll();
   }
 
-
   public Assignment getAssignmentById(long id) {
     if (assignmentRepository.existsById(id)) {
       return assignmentRepository.findById(id).get();
-    }
-    else {
+    } else {
       throw new AssignmentIdNotFoundException(
-          String.format("Assignment with id %d not found",
-              id)
+          String.format("Assignment with id %d not found", id)
       );
     }
   }
 
   public Assignment createNewAssignment(Assignment assignment) {
-    assignment.setId(0);
-    System.out.println(assignment.toString());
-    Assignment newAssignment = assignmentRepository.save(assignment);
-    return newAssignment;
-
+    assignment.setId(0L);
+    return assignmentRepository.save(assignment);
   }
-
-
 
   public Assignment updateExistingAssignment(Assignment assignment) {
     if (assignmentRepository.existsById(assignment.getId())) {
-      Assignment updatedAssignment = assignmentRepository.save(assignment);
-      return updatedAssignment;
-    }
-    else {
+      return assignmentRepository.save(assignment);
+    } else {
       throw new AssignmentIdNotFoundException(
-          String.format("Assignment with id %dd not found",
-              assignment.getId())
+          String.format("Assignment with id %dd not found", assignment.getId())
       );
     }
-
   }
 
   public Assignment deleteAssignmentById(long id) {
@@ -64,10 +52,8 @@ public class AssignmentServiceImpl implements AssignmentService {
       return assignment.get();
     } else {
       throw new AssignmentIdNotFoundException(
-          String.format("Assignment with id %ddd not found",
-              id)
+          String.format("Assignment with id %ddd not found", id)
       );
     }
   }
-
 }

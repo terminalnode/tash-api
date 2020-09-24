@@ -12,13 +12,12 @@ import java.util.List;
 @RequestMapping("/api/v1/assignments")
 
 public class AssignmentControllerV1 {
-
-
     @Autowired
     AssignmentService assignmentService;
 
     @GetMapping
-    public List<Assignment> getAllAssignments(){ return assignmentService.getAllAssignments();
+    public List<Assignment> getAllAssignments() {
+        return assignmentService.getAllAssignments();
     }
 
     @GetMapping("/{id}")
@@ -28,23 +27,16 @@ public class AssignmentControllerV1 {
 
     @PostMapping
     public Assignment createNewAssignment (@RequestBody Assignment assignment) {
-        assignment.setId(0);
-        System.out.println(assignment.toString());
-        Assignment newAssignment = assignmentService.createNewAssignment(assignment);
-        return newAssignment;
-
+        return assignmentService.createNewAssignment(assignment);
     }
 
     @PutMapping
     public Assignment updateExistingAssignment(@RequestBody Assignment assignment) {
-        Assignment updatedAssignment = assignmentService.updateExistingAssignment(assignment);
-        return updatedAssignment;
-
+        return assignmentService.updateExistingAssignment(assignment);
     }
 
     @DeleteMapping("/{id}")
     public Assignment deleteAssignmentById(@PathVariable long id) {
-        Assignment assignment = assignmentService.deleteAssignmentById(id);
-        return assignment;
+        return assignmentService.deleteAssignmentById(id);
     }
 }
